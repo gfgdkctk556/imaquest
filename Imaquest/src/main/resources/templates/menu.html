@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="menu.css">
+    <title>RPG メニュー画面</title>
+</head>
+<body>
+
+<div class="menu-container">
+    <div class="menu-header">メニュー画面</div>
+    
+    <div class="menu-content">
+        <!-- Left Column -->
+        <div class="menu-section character-selection">
+            <h2>キャラ選択</h2>
+            <ul id="character-list">
+                <!-- キャラクター一覧 -->
+                <li onclick="selectCharacter('勇者')">勇者</li>
+                <li onclick="selectCharacter('魔法使い')">魔法使い</li>
+                <li onclick="selectCharacter('回復士')">回復士</li>
+                <li onclick="selectCharacter('タンク')">タンク</li>
+            </ul>
+            <div id="selected-character-status">
+                <!-- 選択したキャラクターのステータス表示 -->
+            </div>
+        </div>
+
+        <!-- Center Column -->
+        <div class="menu-section equipment-status">
+            <h2>装備とステータス</h2>
+            <div id="equipment-list">
+                <!-- 装備一覧 -->
+                <h3>所持武具一覧</h3>
+                <ul>
+                    <li onclick="selectEquipment('剣')">剣 <button onclick="equip('剣')">装備</button> <button onclick="unequip('剣')">外す</button></li>
+                    <li onclick="selectEquipment('盾')">盾 <button onclick="equip('盾')">装備</button> <button onclick="unequip('盾')">外す</button></li>
+                    <li onclick="selectEquipment('杖')">杖 <button onclick="equip('杖')">装備</button> <button onclick="unequip('杖')">外す</button></li>
+                    <li onclick="selectEquipment('鎧')">鎧 <button onclick="equip('鎧')">装備</button> <button onclick="unequip('鎧')">外す</button></li>
+                    <li onclick="selectEquipment('帽子')">帽子 <button onclick="equip('帽子')">装備</button> <button onclick="unequip('帽子')">外す</button></li>
+                </ul>
+                <div id="selected-equipment-status">
+                    <!-- 選択した武具のステータス表示 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="menu-section item-list">
+            <h2>アイテム</h2>
+            <ul id="item-list">
+                <!-- アイテム一覧 -->
+                <li onclick="selectItem('回復薬')">回復薬</li>
+                <li onclick="selectItem('毒消し')">毒消し</li>
+                <li onclick="selectItem('魔法の羽')">魔法の羽</li>
+                <li onclick="selectItem('力の秘薬')">力の秘薬</li>
+                <li onclick="selectItem('魔法の結晶')">魔法の結晶</li>
+            </ul>
+            <div id="selected-item-description">
+                <!-- 選択したアイテムの説明表示 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- フィールド画面に戻るボタン -->
+    <button onclick="returnToField()">フィールドに戻る</button>
+</div>
+
+<script src="menu.js"></script>
+
+<script>
+    function equip(item) {
+        alert(`${item}を装備しました！`);
+    }
+
+    function unequip(item) {
+        alert(`${item}を外しました！`);
+    }
+
+    // フィールド画面に戻る処理
+    function returnToField() {
+        // フィールド画面のURLにリダイレクト
+        window.location.href = "/demofield";
+    }
+</script>
+
+</body>
+</html>

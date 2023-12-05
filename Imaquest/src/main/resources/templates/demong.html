@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ng画面</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>間違えてまーす</h2>
+        <form th:action="@{/demologin}" method="post">
+            <label for="username">名前:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">ログイン</button>
+        </form>
+
+        <p class="error-message">どちらかが間違っています。!!!!!</p>
+
+        <a href="/demoregister">アカウント作成</a>
+    </div>
+
+</body>
+</html>

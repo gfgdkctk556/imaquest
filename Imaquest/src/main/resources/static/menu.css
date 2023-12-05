@@ -1,0 +1,54 @@
+/* ... 他のスタイル ... */
+
+.menu-content {
+    display: flex;
+    position: relative; /* 親要素に対して相対位置指定を追加 */
+}
+
+.menu-section {
+    width: 30%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column; /* セクション内の要素を縦に配置 */
+}
+
+#selected-character-status,
+#selected-equipment-status,
+#selected-item-description {
+    margin-top: 10px;
+    flex-grow: 1; /* ステータス表示エリアが上に伸びるように設定 */
+}
+
+#equipment-list {
+    margin-top: 20px; /* 装備一覧の上部のマージンを追加 */
+}
+
+#selected-character-status {
+    order: 1; /* キャラクターのステータスの表示順序を制御 */
+}
+
+#equipment-list {
+    order: 2; /* 装備一覧の表示順序を制御 */
+}
+
+#selected-equipment-status {
+    order: 3; /* 装備のステータスの表示順序を制御 */
+}
+
+/* フィールドへ戻るボタンのスタイル */
+.return-to-field-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.return-to-field-button:hover {
+    background-color: #2980b9;
+}

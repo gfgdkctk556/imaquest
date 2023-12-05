@@ -1,0 +1,54 @@
+/* battle.css */
+
+/* 画面全体に広がるコンテナ */
+.battle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 敵の情報を表示するエリア */
+.battle-enemy {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.battle-enemy img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* バトルアクション関連のエリア */
+.battle-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 戦闘アクションの選択肢 */
+.battle-action-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+/* 味方のステータス表示エリア */
+.battle-status {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+/* フィールド画面に戻るボタン */
+.return-to-field-button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.return-to-field-button:hover {
+    background-color: #2980b9;
+}

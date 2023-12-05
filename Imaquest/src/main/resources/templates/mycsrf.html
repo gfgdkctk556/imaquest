@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRFお試し用。</title>
+</head>
+<body>
+    <h1>CSRFお試し用</h1>
+    <form th:action="@{/moneySend}" method="GET">
+	 	<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+		送金先
+        <input type="text" name="atesaki"><br>
+        送る金額
+        <input type="text" name="kingaku"><br>
+        <button type="submit">お金を送金</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="mura.css">
+    <title>RPG 村画面</title>
+</head>
+<body>
+
+<div class="menu-container">
+    <div class="menu-header">村画面</div>
+    
+    <!-- 所持ゴールド表示領域 -->
+    <div class="gold-section">
+        <span>所持ゴールド: </span>
+        <span id="gold-amount">100</span> <!-- ここは実際の所持ゴールドを表示する領域 -->
+    </div>
+
+    <div class="menu-content">
+        <!-- Left Column -->
+        <div class="menu-section equipment-purchase">
+            <h2>装備の購入</h2>
+            <ul id="equipment-list">
+                <!-- 装備一覧 -->
+                <li onclick="purchaseEquipment('新しい剣', 50)">新しい剣 - 50ゴールド</li>
+                <li onclick="purchaseEquipment('強力な盾', 30)">強力な盾 - 30ゴールド</li>
+                <!-- 他のアイテムも追加 -->
+            </ul>
+            <div id="selected-purchase-status">
+                <!-- 購入した装備のステータス表示 -->
+            </div>
+        </div>
+
+        <!-- Center Column -->
+        <div class="menu-section equipment-sell">
+            <h2>装備の売却</h2>
+            <ul id="sell-list">
+                <!-- 装備一覧 -->
+                <li onclick="sellEquipment('古い剣', 20)">古い剣 - 20ゴールド</li>
+                <li onclick="sellEquipment('傷ついた盾', 10)">傷ついた盾 - 10ゴールド</li>
+                <!-- 他のアイテムも追加 -->
+            </ul>
+            <div id="selected-sell-status">
+                <!-- 売却した装備のステータス表示 -->
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="menu-section rest">
+            <h2>休む</h2>
+            <button onclick="rest()">休む</button>
+            <div id="rest-status">
+                <!-- 休んだ結果の表示 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- フィールド画面に戻るボタン -->
+    <button onclick="returnToField()">フィールドに戻る</button>
+</div>
+
+<script src="mura.js"></script>
+
+<script>
+    // フィールド画面に戻る処理
+    function returnToField() {
+        // フィールド画面のURLにリダイレクト
+        window.location.href = "/demofield";
+    }
+</script>
+
+</body>
+</html>

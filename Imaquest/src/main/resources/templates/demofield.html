@@ -1,0 +1,43 @@
+<!-- field.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フィールド画面</title>
+    <link rel="stylesheet" href="field.css">
+</head>
+<body>
+
+    <div class="board" id="board"></div>
+    <button id="menuButton" class="button" onclick="openMenu()">メニュー</button>
+    <button id="returnToLoginButton" class="button" onclick="returnToLogin()">ログイン画面に戻る</button>
+    
+    <div id="encounterMessage" class="encounter-message" style="display: none;">
+        敵が現れた！
+        <button onclick="startBattle()">戦闘開始</button>
+    </div>
+
+    <script src="field.js"></script>
+    <script>
+        // メニューボタンがクリックされたときの処理
+        function openMenu() {
+            // メニュー画面に遷移する処理を追加
+            window.location.href = "/menu";
+        }
+
+        // ログイン画面に戻るボタンがクリックされたときの処理
+        function returnToLogin() {
+            // ログイン画面に遷移する処理を追加
+            window.location.href = "/demologin";
+        }
+
+        // 戦闘開始処理
+        function startBattle() {
+            // バトル画面に遷移
+            window.location.href = "/battle";
+        }
+    </script>
+</body>
+</html>
