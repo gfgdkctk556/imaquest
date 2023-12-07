@@ -28,31 +28,31 @@
 
 <div class="battle-container">
     <div class="battle-enemy">
-        <!-- 敵の画像や名前などを表示 -->
+         敵の画像や名前などを表示 
         <h2 id="enemy-name">すらいむさん</h2>
         <img id="enemy-image" th:src="@{/images/enemyimages/slime.png}" alt="urlが違うかも">
     </div>
 
     <div class="battle-actions">
-        <!-- 戦う、逃げる、道具のボタン -->
+         戦う、逃げる、道具のボタン 
         <div class="battle-buttons">
             <button onclick="showBattleOptions()">戦う</button>
             <button onclick="tryEscape()">逃げる</button>
             <button onclick="useItem()">道具</button>
-            <!-- 追加ボタン -->
+             追加ボタン 
             <button onclick="battleWin()">バトル：勝ち</button>
             <button onclick="battleLose()">バトル：負け</button>
         </div>
 
-        <!-- 道具表示用の領域 -->
+         道具表示用の領域 
         <div class="item-list" id="item-list" style="display: none;">
             <h3>所持アイテム</h3>
             <div id="item-container"></div>
         </div>
 
-        <!-- 戦闘アクションの選択肢 -->
+         戦闘アクションの選択肢 
         <div class="battle-action-options" id="battle-options" style="display: none;">
-            <!-- 戦うの場合 -->
+             戦うの場合 
             <div id="attack-options">
                 <button onclick="attack()">攻撃</button>
                 <button onclick="selectMagic()">魔法</button>
@@ -60,7 +60,7 @@
                 <button onclick="useUniqueSkill()">固有スキル</button>
             </div>
 
-            <!-- 魔法の選択肢 -->
+             魔法の選択肢 
             <div id="magic-options" style="display: none;">
                 <button onclick="castSpell('フレアボール')">フレアボール</button>
                 <button onclick="castSpell('ウィンドクラッシュ')">ウィンドクラッシュ</button>
@@ -70,12 +70,12 @@
     </div>
 
     <div class="battle-status">
-        <!-- 味方のステータス表示 -->
+         味方のステータス表示 
         <div class="ally-status" id="player-status">
-            <!-- プレイヤーのステータスをここに表示 -->
+             プレイヤーのステータスをここに表示 
         </div>
 
-        <!-- 勝ちのコメント -->
+         勝ちのコメント 
         <div class="battle-comment" id="win-comment" onclick="battleWin()">
             <p>スライムを倒した！</p>
             <p>経験値を５手に入れた！</p>
@@ -84,7 +84,7 @@
             <p>攻撃力が２上がった。防御力が４上がった。HPが４上がった！</p>
         </div>
 
-        <!-- コメント表示用の枠 -->
+         コメント表示用の枠 
         <div class="battle-comment" id="battle-comment" onclick="showNextComment()"></div>
     </div>
 </div>
