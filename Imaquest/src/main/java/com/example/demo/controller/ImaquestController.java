@@ -22,4 +22,30 @@ public class ImaquestController {
     public String registerForm(Model model) {
         return "register"; // register.htmlのパス
     }
+
+    // 新しく追加されたコントローラー
+    @RequestMapping("/demofield")
+    public String demoField(Model model) {
+        return "demofield"; // demofield.htmlのパス
+    }
+
+    @RequestMapping("/menu")
+    public String menu(Model model) {
+        return "menu"; // menu.htmlのパス
+    }
+
+    @RequestMapping("/mura")
+    public String mura(Model model) {
+        return "mura"; // mura.htmlのパス
+    }
+
+    @RequestMapping("/machi")
+    public String machi(Model model) {
+        return "machi"; // machi.htmlのパス
+    }
+
+    @RequestMapping("/battle")
+    public String battle(Model model) {
+        return "battle"; // battle.htmlのパス
+    }
 }
