@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const isAdjacent = (Math.abs(clickedRow - playerRow) === 1 && clickedCol === playerCol) ||
             (Math.abs(clickedCol - playerCol) === 1 && clickedRow === playerRow);
 
+  
+
         if (isAdjacent && isValidMove(clickedRow, clickedCol)) {
             // プレイヤーを移動
             player.classList.remove("player");
