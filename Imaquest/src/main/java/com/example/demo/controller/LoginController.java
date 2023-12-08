@@ -22,23 +22,25 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String character_Name, @RequestParam String password, Model model, HttpSession session) {
-        // プレイヤー名とパスワードが一致するか確認
+    public String login(
+            @RequestParam String character_Name,
+            @RequestParam String password,
+            Model model,
+            HttpSession session
+    ) {
         String sqlCheckLogin = "SELECT COUNT(*) FROM player_characters WHERE character_Name = ? AND player_pass = ?";
         int count = jdbcTemplate.queryForObject(sqlCheckLogin, Integer.class, character_Name, password);
 
         if (count > 0) {
-        	
-        	
-            // ログイン成功時にセッションデータをデータベースに保存
             String sessionId = session.getId();
             String insertSql = "INSERT INTO session_data (session_id, character_name) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, sessionId, character_Name);
 
-            // ログイン成功
-            return "field"; // ログイン後のリダイレクト先（例としてフィールド画面）
+            String updateFirstLoginSql = "UPDATE player_characters SET first_login = 0 WHERE character_Name = ?";
+            jdbcTemplate.update(updateFirstLoginSql, character_Name);
+
+            return (count == 1) ? "opening" : "field";
         } else {
-            // ログイン失敗時のエラーメッセージを設定してログイン画面を再表示
             model.addAttribute("errorMessage", "プレイヤー名またはパスワードが正しくありません。");
             return "login";
         }
