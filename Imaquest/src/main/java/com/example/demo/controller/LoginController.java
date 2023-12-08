@@ -27,7 +27,7 @@ public class LoginController {
 
         if (count > 0) {
             // ログイン成功
-            return "demofield"; // ログイン後のリダイレクト先（例としてプレイヤーリスト画面）
+            return "field"; // ログイン後のリダイレクト先（例としてプレイヤーリスト画面）
         } else {
             // ログイン失敗時のエラーメッセージを設定してログイン画面を再表示
             model.addAttribute("errorMessage", "プレイヤー名またはパスワードが正しくありません。");
