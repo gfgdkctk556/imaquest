@@ -1,12 +1,11 @@
-<!-- field.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>フィールド画面</title>
-    <link rel="stylesheet" href="field.css">
+    <link rel="stylesheet" href="css/field.css">
+    <script src="field.js"></script>
 </head>
 <body>
 
@@ -19,8 +18,17 @@
         <button onclick="startBattle()">戦闘開始</button>
     </div>
 
-    <script src="field.js"></script>
+   <!-- セッション情報表示 -->
+<div id="sessionInfo" class="session-info">
+    セッション情報：<span th:text="${#session.id}"></span>, プレイヤー名：<span th:text="${session.getAttribute('character_Name') != null ? session.getAttribute('character_Name') : 'N/A'}"></span>
+</div>
+
+
     <script>
+        // セッション情報を表示
+        var sessionId = document.querySelector("#sessionInfo span:nth-child(1)").innerText;
+        var playerName = document.querySelector("#sessionInfo span:nth-child(2)").innerText;
+
         // メニューボタンがクリックされたときの処理
         function openMenu() {
             // メニュー画面に遷移する処理を追加
@@ -30,7 +38,7 @@
         // ログイン画面に戻るボタンがクリックされたときの処理
         function returnToLogin() {
             // ログイン画面に遷移する処理を追加
-            window.location.href = "/demologin";
+            window.location.href = "/login";
         }
 
         // 戦闘開始処理
@@ -38,6 +46,10 @@
             // バトル画面に遷移
             window.location.href = "/battle";
         }
+
+        // JavaScriptでのセッション情報表示
+        console.log("セッションID: " + sessionId);
+        console.log("プレイヤー名: " + playerName);
     </script>
 </body>
 </html>

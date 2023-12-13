@@ -44,9 +44,18 @@ public class AccountCreationController {
     private void createInitialCharacter(String characterName) {
     	
     	// プレイヤーキャラクターの初期データを作成
-        String sqlInsertPlayerCharacter = "INSERT INTO player_characters (character_Name, character_Level, character_HP, character_MP, character_Attack, character_Defense, character_Image, character_Experience) " +
-                "VALUES (?, 1, 100, 50, 10, 10, 'player_image.png', 0)";
-        jdbcTemplate.update(sqlInsertPlayerCharacter, characterName);
+    	String sqlUpdatePlayerCharacter = "UPDATE player_characters " +
+                "SET " +
+                "character_Level = 1, " +
+                "character_HP = 100, " +
+                "character_MP = 50, " +
+                "character_Attack = 10, " +
+                "character_Defense = 10, " +
+                "character_Image = 'player_image.png', " +
+                "character_Experience = 0 " +
+                "WHERE character_Name = ?";
+
+        jdbcTemplate.update(sqlUpdatePlayerCharacter, characterName);
 
     	
         // タンクの初期キャラクターを作成
