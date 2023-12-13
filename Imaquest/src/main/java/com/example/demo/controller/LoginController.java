@@ -49,8 +49,7 @@ public class LoginController {
                 return "field";
             }
         } else {
-            model.addAttribute("errorMessage", "プレイヤー名またはパスワードが正しくありません。");
-            return "login";
+        	return "redirect:/ng";
         }
 		
     }

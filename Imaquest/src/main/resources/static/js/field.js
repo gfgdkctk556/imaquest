@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ログイン画面に戻るボタンがクリックされたときの処理
     function returnToLogin() {
         // ログイン画面に遷移する処理を追加
-        window.location.href = "/demologin";
+        window.location.href = "/login";
     }
 
     // 戦闘開始処理
