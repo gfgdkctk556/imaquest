@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>フィールド画面</title>
     <link rel="stylesheet" href="css/field.css">
-    <script src="field.js"></script>
+    <script src="js/field.js"></script>
 </head>
 <body>
 
@@ -18,16 +18,19 @@
         <button onclick="startBattle()">戦闘開始</button>
     </div>
 
-   <!-- セッション情報表示 -->
-<div id="sessionInfo" class="session-info">
-    セッション情報：<span th:text="${#session.id}"></span>, プレイヤー名：<span th:text="${session.getAttribute('character_Name') != null ? session.getAttribute('character_Name') : 'N/A'}"></span>
+  <!-- プレイヤー名の表示 -->
+<div id="playerNameDisplay" class="player-name-display">
+    プレイヤー名：<span th:text="${playerName != null ? playerName : 'N/A'}"></span>
 </div>
+
 
 
     <script>
         // セッション情報を表示
         var sessionId = document.querySelector("#sessionInfo span:nth-child(1)").innerText;
-        var playerName = document.querySelector("#sessionInfo span:nth-child(2)").innerText;
+        
+var playerName = document.querySelector("#sessionInfo span:nth-child(2)").innerText;
+
 
         // メニューボタンがクリックされたときの処理
         function openMenu() {

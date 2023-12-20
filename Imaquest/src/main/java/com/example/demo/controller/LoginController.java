@@ -35,6 +35,9 @@ public class LoginController {
             String insertSql = "INSERT INTO session_data (session_id, character_name) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, sessionId, character_Name);
 
+            // プレイヤー名をセッションに設定
+            session.setAttribute("character_Name", character_Name);
+
             // Check the value of the first_login column
             String checkFirstLoginSql = "SELECT first_login FROM player_characters WHERE character_Name = ?";
             int firstLogin = jdbcTemplate.queryForObject(checkFirstLoginSql, Integer.class, character_Name);
@@ -46,7 +49,7 @@ public class LoginController {
                 return "opening";
             } else {
                 // If first_login is not 1, display field.html
-                return "field";
+                return "redirect:/field";
             }
         } else {
         	return "redirect:/ng";

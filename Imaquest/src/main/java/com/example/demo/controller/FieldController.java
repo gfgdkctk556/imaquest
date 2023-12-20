@@ -16,9 +16,7 @@ public class FieldController {
         HttpSession session = request.getSession();
 
         // セッションからプレイヤー名を取得
-     // FieldController.java
         String playerName = (String) session.getAttribute("character_Name");
-
 
         // モデルにプレイヤー名を追加
         model.addAttribute("playerName", playerName);
