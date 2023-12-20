@@ -32,11 +32,13 @@ public class LoginController {
         int count = jdbcTemplate.queryForObject(sqlCheckLogin, Integer.class, character_Name, password);
         if (count > 0) {
             String sessionId = session.getId();
+            
             String insertSql = "INSERT INTO session_data (session_id, character_name) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, sessionId, character_Name);
 
-            // プレイヤー名をセッションに設定
+            /// プレイヤー名をセッションに設定
             session.setAttribute("character_Name", character_Name);
+            
 
             // Check the value of the first_login column
             String checkFirstLoginSql = "SELECT first_login FROM player_characters WHERE character_Name = ?";
