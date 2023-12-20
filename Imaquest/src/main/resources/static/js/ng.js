@@ -1,8 +1,9 @@
-function returnToLogin() {
-        // ログイン画面に遷移する処理を追加
-        window.location.href = "/login";
+function goBack() {
+    console.log("Go back button clicked");
+    window.location.href = "/login";
 }
+
 function goToSignUp() {
-  
-    window.location.href = "register";
+    console.log("Go to sign-up button clicked");
+    window.location.href = "/register";
 }
