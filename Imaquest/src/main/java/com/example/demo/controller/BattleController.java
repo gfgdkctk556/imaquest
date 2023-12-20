@@ -47,7 +47,7 @@ public class BattleController {
             model.addAttribute("battleStarted", true);
         }
 
-        // プレイヤーの行動が選択された場合
+        //? プレイヤーの行動が選択された場合
         if (request.getParameter("playerAction") != null) {
             // プレイヤーの行動に応じた処理を実行
             // 例: 攻撃、魔法、アイテムの処理を分岐
