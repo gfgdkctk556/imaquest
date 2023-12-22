@@ -20,7 +20,8 @@ public class AccountCreationController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam("character_Name") String character_Name, @RequestParam("password") String password, Model model) {
+    public String register(@RequestParam("character_Name") String character_Name,
+                           @RequestParam("password") String password, Model model) {
         // プレイヤー名が既に存在するか確認
         String sqlCheckDuplicate = "SELECT COUNT(*) FROM player_characters WHERE character_Name = ?";
         int count = jdbcTemplate.queryForObject(sqlCheckDuplicate, Integer.class, character_Name);
@@ -32,7 +33,7 @@ public class AccountCreationController {
         }
 
         // 新しいプレイヤーキャラクターエンティティを作成し、プレイヤーIDとパスワードを設定
-        String sqlInsertPlayer = "INSERT INTO player_characters (character_Name, player_pass) VALUES (?, ?)";
+        String sqlInsertPlayer = "INSERT INTO player_characters (character_Name, player_pass, char_type) VALUES (?, ?, 1)";
         jdbcTemplate.update(sqlInsertPlayer, character_Name, password);
 
         // アカウント作成時に同時に初期キャラクターを作成
@@ -42,9 +43,8 @@ public class AccountCreationController {
     }
 
     private void createInitialCharacter(String characterName) {
-    	
-    	// プレイヤーキャラクターの初期データを作成
-    	String sqlUpdatePlayerCharacter = "UPDATE player_characters " +
+        // プレイヤーキャラクターの初期データを作成
+        String sqlUpdatePlayerCharacter = "UPDATE player_characters " +
                 "SET " +
                 "character_Level = 1, " +
                 "character_HP = 100, " +
@@ -57,20 +57,19 @@ public class AccountCreationController {
 
         jdbcTemplate.update(sqlUpdatePlayerCharacter, characterName);
 
-    	
         // タンクの初期キャラクターを作成
-        String sqlInsertTank = "INSERT INTO tanks (character_Name, character_Level, character_HP, character_MP, character_Attack, character_Defense, character_Image, character_Experience) " +
-                "VALUES (?, 1, 150, 30, 8, 15, 'tank_image.png', 0)";
-        jdbcTemplate.update(sqlInsertTank,  "_Tank");
+        String sqlInsertTank = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
+                "VALUES (?, 2, 'Tank Skill')";
+        jdbcTemplate.update(sqlInsertTank, characterName);
 
         // 回復士の初期キャラクターを作成
-        String sqlInsertHealer = "INSERT INTO healers (character_Name, character_Level, character_HP, character_MP, character_Attack, character_Defense, character_Image, character_Experience) " +
-                "VALUES (?, 1, 80, 60, 6, 10, 'healer_image.png', 0)";
-        jdbcTemplate.update(sqlInsertHealer,  "_Healer");
+        String sqlInsertHealer = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
+                "VALUES (?, 3, 'Healer Skill')";
+        jdbcTemplate.update(sqlInsertHealer, characterName);
 
         // 魔法使いの初期キャラクターを作成
-        String sqlInsertWizard = "INSERT INTO wizards (character_Name, character_Level, character_HP, character_MP, character_Attack, character_Defense, character_Image, character_Experience) " +
-                "VALUES (?, 1, 70, 80, 5, 8, 'wizard_image.png', 0)";
-        jdbcTemplate.update(sqlInsertWizard,  "_Wizard");
+        String sqlInsertWizard = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
+                "VALUES (?, 4, 'Wizard Skill')";
+        jdbcTemplate.update(sqlInsertWizard, characterName);
     }
 }

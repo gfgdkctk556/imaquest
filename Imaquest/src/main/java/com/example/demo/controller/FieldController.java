@@ -15,15 +15,15 @@ public class FieldController {
         // HttpSessionを取得
         HttpSession session = request.getSession();
 
-        // セッションからプレイヤー名を取得
+        // セッションからプレイヤー名とプレイヤーIDを取得
         String playerName = (String) session.getAttribute("character_Name");
+        Integer playerId = (Integer) session.getAttribute("playerId");
 
-        // モデルにプレイヤー名を追加
+        // モデルにプレイヤー名とプレイヤーIDを追加
         model.addAttribute("playerName", playerName);
+        model.addAttribute("playerId", playerId);
 
         // 任意のモデル属性があれば追加
         return "field"; // field.htmlのパス
     }
-
-    // 他のメソッドもここに追加
 }

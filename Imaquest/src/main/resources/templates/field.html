@@ -18,20 +18,18 @@
         <button onclick="startBattle()">戦闘開始</button>
     </div>
 
-  <!-- プレイヤー名の表示 -->
-<div id="playerNameDisplay" class="player-name-display">
-    プレイヤー名：<span th:text="${playerName != null ? playerName : 'N/A'}"></span>
+   <!-- プレイヤー名と識別IDの表示 -->
+<div id="playerInfoDisplay" class="player-info-display">
+    プレイヤー名：<span th:text="${playerName != null ? playerName : '受け取れていません'}"></span>
+    <br>
+    プレイヤーID：<span th:text="${playerId != null ? playerId : '受け取れていません'}"></span>
 </div>
+   <script>
+    // セッション情報を表示
+    var playerName = document.querySelector("#playerInfoDisplay span:nth-child(1)").innerText;
+    var playerId = document.querySelector("#playerInfoDisplay span:nth-child(2)").innerText;
 
-
-
-    <script>
-        // セッション情報を表示
-        var sessionId = document.querySelector("#sessionInfo span:nth-child(1)").innerText;
-        
-var playerName = document.querySelector("#sessionInfo span:nth-child(2)").innerText;
-
-
+    
         // メニューボタンがクリックされたときの処理
         function openMenu() {
             // メニュー画面に遷移する処理を追加
@@ -53,6 +51,7 @@ var playerName = document.querySelector("#sessionInfo span:nth-child(2)").innerT
         // JavaScriptでのセッション情報表示
         console.log("セッションID: " + sessionId);
         console.log("プレイヤー名: " + playerName);
+        console.log("プレイヤーID: " + playerId);
     </script>
 </body>
 </html>
