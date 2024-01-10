@@ -2,20 +2,25 @@ package com.example.demo.controller;
 
 import java.util.Map;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
+import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
 public class BattleSQLController {
 
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public BattleSQLController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional
     public void processBattleRewards(int playerId, int enemyId, int itemId, int magicSkillId) {
-        dropGold(playerId, enemyId);
+       dropGold(playerId, enemyId);
         dropItem(playerId, enemyId);
         gainExperience(playerId, enemyId);
         useItem(playerId, itemId);
@@ -72,18 +77,58 @@ public class BattleSQLController {
         }
     }
 
+    
+
     private void learnMagicSkill(int playerId, int magicSkillId) {
         // プレイヤーが既にその魔法を覚えているか確認
-        String checkMagicSkillExistenceSql = "SELECT COUNT(*) FROM player_magic_skills " +
-                "WHERE player_id = ? AND magic_skill_id = ?";
+        String checkMagicSkillExistenceSql = "SELECT COUNT(*) FROM player_skill WHERE player_id = ? AND magic_skill_id = ?";
         if (jdbcTemplate.queryForObject(checkMagicSkillExistenceSql, Integer.class, playerId, magicSkillId) == 0) {
             // プレイヤーが魔法を覚えていない場合、覚える
-            String insertSql = "INSERT INTO player_magic_skills (player_id, magic_skill_id) VALUES (?, ?)";
+            String insertSql = "INSERT INTO player_skill (player_id, magic_skill_id) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, playerId, magicSkillId);
 
             // ここに魔法を覚えた際の処理を追加
         }
     }
+
+    private void learnHealerSkill(int playerId, int healerSkillId) {
+        // プレイヤーが既にその回復魔法を覚えているか確認
+        String checkHealerSkillExistenceSql = "SELECT COUNT(*) FROM healers_skill WHERE player_id = ? AND healer_skill_id = ?";
+        if (jdbcTemplate.queryForObject(checkHealerSkillExistenceSql, Integer.class, playerId, healerSkillId) == 0) {
+            // プレイヤーが回復魔法を覚えていない場合、覚える
+            String insertSql = "INSERT INTO healers_skill (player_id, healer_skill_id) VALUES (?, ?)";
+            jdbcTemplate.update(insertSql, playerId, healerSkillId);
+
+            // ここに回復魔法を覚えた際の処理を追加
+        }
+    }
+
+    private void learnTankSkill(int playerId, int tankSkillId) {
+        // プレイヤーが既にその防御スキルを覚えているか確認
+        String checkTankSkillExistenceSql = "SELECT COUNT(*) FROM tanks_skill WHERE player_id = ? AND tank_skill_id = ?";
+        if (jdbcTemplate.queryForObject(checkTankSkillExistenceSql, Integer.class, playerId, tankSkillId) == 0) {
+            // プレイヤーが防御スキルを覚えていない場合、覚える
+            String insertSql = "INSERT INTO tanks_skill (player_id, tank_skill_id) VALUES (?, ?)";
+            jdbcTemplate.update(insertSql, playerId, tankSkillId);
+
+            // ここに防御スキルを覚えた際の処理を追加
+        }
+    }
+
+    private void learnWizardSkill(int playerId, int wizardSkillId) {
+        // プレイヤーが既にその攻撃魔法を覚えているか確認
+        String checkWizardSkillExistenceSql = "SELECT COUNT(*) FROM wizards_skill WHERE player_id = ? AND wizard_skill_id = ?";
+        if (jdbcTemplate.queryForObject(checkWizardSkillExistenceSql, Integer.class, playerId, wizardSkillId) == 0) {
+            // プレイヤーが攻撃魔法を覚えていない場合、覚える
+            String insertSql = "INSERT INTO wizards_skill (player_id, wizard_skill_id) VALUES (?, ?)";
+            jdbcTemplate.update(insertSql, playerId, wizardSkillId);
+
+            // ここに攻撃魔法を覚えた際の処理を追加
+        }
+    }
+
+   
+
 
     private void gainExperience(int playerId, int enemyId) {
         // 敵が持っている経験値を取得
