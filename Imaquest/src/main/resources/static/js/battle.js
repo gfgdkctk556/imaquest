@@ -196,7 +196,6 @@ function showNextComment() {
     }
 }
 
-
 // 負けの処理
 function battleLose() {
     comments = ["全滅した！"];
