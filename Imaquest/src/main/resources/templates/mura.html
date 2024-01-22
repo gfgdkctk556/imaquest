@@ -1,74 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/mura.css">
-    <title>RPG 村画面</title>
+    <title>村のページ</title>
+    <link rel="stylesheet" href="/css/mura.css">
+    <script src="/js/mura.js"></script>
 </head>
 <body>
+<div id="itemDetails"></div>
 
-<div class="menu-container">
-    <div class="menu-header">村画面</div>
+
+    <h2>村へようこそ</h2>
+
+
+<!-- アイテム一覧表示 -->
+<h3>アイテム一覧</h3>
+<div class="item-list-container">
+    <ul id="itemList" class="item-list">
+        <!-- アイテム名をクリックすると詳細を表示 -->
+        <li th:each="item : ${itemList}" th:text="${item}" onclick="showItemDetails(this.innerText)"></li>
+    </ul>
+</div>
+<hr>
+<!-- 装備一覧表示 -->
+<h3>装備一覧</h3>
+<div class="equipment-list-container">
+    <ul id="equipmentList" class="equipment-list">
+        <!-- 装備名をクリックすると詳細を表示 -->
+        <li th:each="equipment : ${equipmentList}" th:text="${equipment}" onclick="showEquipmentDetails(this.innerText)"></li>
+    </ul>
+</div>
+<div id="itemDetailsContainer" class="details-container">
+        <h2 id="itemName"></h2>
+        <p id="itemEffect"></p>
+        <p id="purchasePrice"></p>
+        <label for="purchaseQuantity">数量:</label>
+        <select id="purchaseQuantity" name="quantity" required>
+            <!-- You may dynamically populate this dropdown in JavaScript based on the available quantity -->
+            <!-- For simplicity, let's assume a maximum quantity of 10 -->
+            <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+        </select>
+        <button type="button" onclick="purchaseItem()">アイテム購入</button>
+    </div>
+
+    <div id="equipmentDetailsContainer" class="details-container">
+        <h2 id="equipmentName"></h2>
+        <p id="equipmentEffect"></p>
+        <p id="purchasePriceEquipment"></p>
+        <label for="purchaseQuantityEquipment">数量:</label>
+        <select id="purchaseQuantityEquipment" name="quantity" required>
+            <!-- You may dynamically populate this dropdown in JavaScript based on the available quantity -->
+            <!-- For simplicity, let's assume a maximum quantity of 10 -->
+            <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+        </select>
+        <button type="button" onclick="purchaseEquipment()">装備購入</button>
+    </div>
     
-    <!-- 所持ゴールド表示領域 -->
-    <div class="gold-section">
-        <span>所持ゴールド: </span>
-        <span id="gold-amount">100</span> <!-- ここは実際の所持ゴールドを表示する領域 -->
-    </div>
-
-    <div class="menu-content">
-        <!-- Left Column -->
-        <div class="menu-section equipment-purchase">
-            <h2>装備の購入</h2>
-            <ul id="equipment-list">
-                <!-- 装備一覧 -->
-                <li onclick="purchaseEquipment('新しい剣', 50)">新しい剣 - 50ゴールド</li>
-                <li onclick="purchaseEquipment('強力な盾', 30)">強力な盾 - 30ゴールド</li>
-                <!-- 他のアイテムも追加 -->
-            </ul>
-            <div id="selected-purchase-status">
-                <!-- 購入した装備のステータス表示 -->
-            </div>
-        </div>
-
-        <!-- Center Column -->
-        <div class="menu-section equipment-sell">
-            <h2>装備の売却</h2>
-            <ul id="sell-list">
-                <!-- 装備一覧 -->
-                <li onclick="sellEquipment('古い剣', 20)">古い剣 - 20ゴールド</li>
-                <li onclick="sellEquipment('傷ついた盾', 10)">傷ついた盾 - 10ゴールド</li>
-                <!-- 他のアイテムも追加 -->
-            </ul>
-            <div id="selected-sell-status">
-                <!-- 売却した装備のステータス表示 -->
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="menu-section rest">
-            <h2>休む</h2>
-            <button onclick="rest()">休む</button>
-            <div id="rest-status">
-                <!-- 休んだ結果の表示 -->
-            </div>
-        </div>
-    </div>
-
-    <!-- フィールド画面に戻るボタン -->
-    <button onclick="returnToField()">フィールドに戻る</button>
+    <h3>所持アイテム一覧</h3>
+<div class="player-items-container">
+    <ul id="playerItemList" class="player-item-list">
+        <li th:each="playerItem : ${playerItems}">
+            <span th:text="${playerItem.item_name}"></span>
+            <span th:text="'（所持数：' + ${playerItem.item_quantity} + '）'"></span>
+        </li>
+    </ul>
 </div>
 
-<script src="js/mura.js"></script>
-
-<script>
-    // フィールド画面に戻る処理
-    function returnToField() {
-        // フィールド画面のURLにリダイレクト
-        window.location.href = "/field";
-    }
-</script>
-
+<div id="sellButton" style="display: none;">
+    <label for="sellQuantity">売却数量:</label>
+    <select id="sellQuantity" name="quantity" required></select>
+    <button type="button" onclick="sellItem()">アイテム売却</button>
+</div>
 </body>
 </html>
