@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;mysixth_third.html&apos; to &apos;mysixth_third.html&apos;&#x0D;&#x0A;- 元のプロジェクト: &apos;MyFirstApp&apos;&#x0D;&#x0A;- 宛先要素: &apos;mysixth_third.html&apos;&#x0D;&#x0A;- オリジナル要素: &apos;mysixth_third.html&apos;" description="ファイルをコピー" element1="src/main/resources/templates/mysixth_third.html" files="1" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1683781937924" target="/MyFirstApp/src/main/resources/templates/mysixth_third.html" units="0" version="1.0"/>
+</session>

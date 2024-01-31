@@ -1,0 +1,59 @@
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.TextMessage;
+
+import com.linecorp.bot.model.event.MessageEvent;
+import com.linecorp.bot.model.event.message.TextMessageContent;
+import com.linecorp.bot.spring.boot.annotation.EventMapping;
+import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
+
+@Controller
+@LineMessageHandler
+public class MyLineApiController {
+
+    @Autowired
+    private LineMessagingService lineMessagingService;
+
+    // ユーザーからのメッセージを処理するハンドラー
+    @EventMapping
+    public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
+        String userMessage = event.getMessage().getText();
+
+        // ToDoリストの処理を実装
+        if (userMessage.startsWith("追加: ")) {
+            // タスクをToDoリストに追加する処理を実装
+            String task = userMessage.substring(4); // "追加: "を除いた部分がタスク内容
+            // ToDoリストにタスクを追加する処理をここに実装
+
+        } else if (userMessage.equals("リスト")) {
+            // ToDoリストを表示する処理を実装
+            // ToDoリストの内容を取得し、ユーザーに返信する処理をここに実装
+
+        } else if (userMessage.startsWith("進捗: ")) {
+            // タスクの進捗を更新する処理を実装
+            String task = userMessage.substring(4); // "進捗: "を除いた部分がタスク内容
+            // タスクの進捗を更新する処理をここに実装
+
+        } else {
+            // 不明なコマンドの場合はヘルプメッセージを返信
+            String replyText = "以下のコマンドが利用できます:\n";
+            replyText += "1. 追加: タスク内容\n";
+            replyText += "2. リスト\n";
+            replyText += "3. 進捗: タスク内容\n";
+
+            TextMessage replyMessage = new TextMessage(replyText);
+            reply(event, replyMessage);
+        }
+    }
+
+    // ユーザーに返信を送信するメソッド
+    private void reply(Event event, TextMessage message) {
+        try {
+            lineMessagingService.replyMessage(new ReplyMessage(event.getReplyToken(), message));
+        } catch (IOException e) {
+            // エラーハンドリングを実装
+        }
+    }
+}

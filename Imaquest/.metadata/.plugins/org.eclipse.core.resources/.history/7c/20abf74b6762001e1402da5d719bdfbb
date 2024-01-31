@@ -1,0 +1,11 @@
+public class Testcase {
+    public static void main(String[] args) {
+        // 0から99のランダムな整数を生成
+        java.util.Random rand = new java.util.Random();
+        int randomNumber = rand.nextInt(100);
+
+        // GtyaクラスのGachaメソッドを呼び出して結果を表示
+        String result = Gtya.Gacha(randomNumber);
+        System.out.println("ガチャの結果: " + result);
+    }
+}

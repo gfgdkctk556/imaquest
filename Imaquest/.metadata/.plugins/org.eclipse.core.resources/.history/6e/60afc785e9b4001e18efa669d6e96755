@@ -1,0 +1,28 @@
+package model.modeltest;
+
+import model.Item;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class ItemTest {
+
+    @Test
+    public void testItem() {
+        // Item インスタンスの作成と初期化
+        Item item = new Item("001", "Product A", "Medium", 1000);
+
+        // getter を使用して情報を取得し、JUnit の assertEquals メソッドを使用して検証
+        assertEquals("001", item.getItemId());
+        assertEquals("Product A", item.getItemName());
+        assertEquals("Medium", item.getSize());
+        assertEquals(1000, item.getPrice());
+
+        // setter を使用して情報を更新
+        item.setPrice(1200);
+        item.setSize("Large");
+
+        // 更新した情報を再度検証
+        assertEquals(1200, item.getPrice());
+        assertEquals("Large", item.getSize());
+    }
+}

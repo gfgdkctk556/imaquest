@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>URLパラメーター</title>
+</head>
+<body>
+	<h2>練習問題②</h2>
+	<h3>クリックしたカテゴリをControllerに送り、sessionに格納する事</h3>
+	<a th:href="@{/newyearsecond/{category}(category='衣服')}">衣服</a>
+<a th:href="@{/newyearsecond/{category}(category='食品')}">食品</a>
+<a th:href="@{/newyearsecond/{category}(category='健康器具')}">健康器具</a>
+
+	<h2>練習問題②-2</h2>
+	<h3>Controllerでセッションに格納した値を、↓に表示してね。</h3>
+<div th:text='１１１'+"${secondParam}"></div>
+</body>
+</html>

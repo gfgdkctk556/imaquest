@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 戦闘開始処理
     function startBattle() {
         // バトル画面に遷移
-        window.location.href = "/battle";
+        window.location.href = "/battleStart";
     }
 
     // ボードにプレイヤーを追加

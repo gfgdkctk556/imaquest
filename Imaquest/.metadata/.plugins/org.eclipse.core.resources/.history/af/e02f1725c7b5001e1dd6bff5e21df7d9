@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/battle.css">
+    <script src="js/battle.js"></script>
+      
+    <title>RPG バトル画面</title>
+    <style>
+        /* 画像の大きさを調整するスタイル */
+        .battle-enemy img {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+        }
+
+        /* コメント表示用のスタイル */
+        .battle-comment {
+            border: 2px solid #3498db;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body th:if="${playerInfo != null}">
+
+<div class="battle-container">
+    <div class="battle-enemy">
+        <h2 id="enemy-name" th:text="${enemyName}">すらいむさん</h2>
+        <img id="enemy-image" th:src="@{'/images/enemyimages/' + ${enemyImage}}" alt="urlが違うかも">
+    </div>
+
+    <div class="battle-actions">
+        <div class="battle-buttons">
+            <button onclick="showBattleOptions()">戦う</button>
+            <button onclick="tryEscape()">逃げる</button>
+            <button onclick="useItem()">道具</button>
+            <button onclick="battleWin()">バトル：勝ち</button>
+            <button onclick="battleLose()">バトル：負け</button>
+        </div>
+
+        <div class="item-list" id="item-list" style="display: none;">
+            <h3>所持アイテム</h3>
+            <div id="item-container"></div>
+        </div>
+
+        <div class="battle-action-options" id="battle-options" style="display: none;">
+            <div id="attack-options">
+                <button onclick="attack()">攻撃</button>
+                <button onclick="selectMagic()">魔法</button>
+                <button onclick="defend()">防御</button>
+                <button onclick="useUniqueSkill()">固有スキル</button>
+            </div>
+
+            <div id="magic-options" style="display: none;">
+                <h3>魔法を選択</h3>
+                <div th:each="spell : ${spells}">
+                    <button th:text="${spell['magic_skill_name']}" th:onclick="'castSpell(\'' + ${#strings.replace(spell['magic_skill_name'], "'", "\\'")} + '\')'"></button>
+                </div>
+            </div>
+
+            <div class="battle-comment" id="magic-comment" style="display: none;">
+                <p id="magic-comment-text"></p>
+            </div>
+
+            <button onclick="battleWin()">バトル：勝ち</button>
+            <button onclick="battleLose()">バトル：負け</button>
+        </div>
+    </div>
+
+    <div class="battle-status">
+        <div class="ally-status" id="player-status">
+            <p th:text="${'プレイヤー名: ' + playerInfo.character_Name}"></p>
+            <p th:text="${'プレイヤーID: ' + playerInfo.player_Id}"></p>
+        </div>
+
+        <div class="battle-comment" id="win-comment" onclick="battleWin()">
+            <p>スライムを倒した！</p>
+            <p>経験値を５手に入れた！</p>
+            <p>勇者のレベルが2に上がった！</p>
+            <p>それぞれ能力値が上昇します！</p>
+            <p>攻撃力が２上がった。防御力が４上がった。HPが４上がった！</p>
+        </div>
+
+        <div class="battle-comment" id="battle-comment" onclick="showNextComment()"></div>
+        <!-- バトル結果メッセージを表示 -->
+<div class="battle-comment" th:if="${battleResultMessage != null}">
+    <p th:text="${battleResultMessage}"></p>
+</div>
+
+<!-- 「続くボタンを表示」ボタン -->
+<button id="toggle-buttons" onclick="toggleButtons()" style="display: none;">続く</button>
+
+    </div>
+</div>
+
+<script>
+    // Ajaxで敵情報を取得する関数
+function fetchEnemyInfo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/enemy", true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var enemyInfo = JSON.parse(xhr.responseText);
+            displayEnemy(enemyInfo);
+        }
+    };
+
+    xhr.send();
+}
+
+// 取得した敵情報をHTMLに表示する関数
+function displayEnemy(enemyInfo) {
+    var enemyNameElement = document.getElementById("enemy-name");
+    var enemyImageElement = document.getElementById("enemy-image");
+
+    enemyNameElement.textContent = "敵の名前: " + enemyInfo.enemy_name;
+    enemyImageElement.src = enemyInfo.enemy_image;
+
+    // 他の敵情報も同様に表示...
+
+    // ドロップアイテム情報
+    var dropRateElement = document.createElement("p");
+    dropRateElement.textContent = "ドロップ率: " + enemyInfo.drop_rate + "%";
+    enemyNameElement.appendChild(dropRateElement);
+}
+
+// ページ読み込み時に敵情報を取得
+document.addEventListener("DOMContentLoaded", function () {
+    fetchEnemyInfo();
+});
+
+// 「戦う」ボタンがクリックされたときの処理
+function showBattleOptions() {
+    // 「戦う」ボタンを非表示にする
+    document.querySelector(".battle-buttons button:first-child").style.display = "none";
+
+    // 攻撃、逃げる、道具ボタンを表示する
+    var battleOptions = document.getElementById("battle-options");
+    battleOptions.style.display = "block";
+}
+
+// 攻撃ボタンがクリックされたときの処理
+function attack() {
+    // ここに攻撃に関する処理を追加
+
+    // 「続くボタンを表示」ボタンを表示
+    document.getElementById("toggle-buttons").style.display = "block";
+}
+
+// 魔法ボタンがクリックされたときの処理
+function selectMagic() {
+    // ここに魔法に関する処理を追加
+// Ajaxでプレイヤーが覚えている魔法を取得する関数
+function fetchPlayerSpells() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/battle-data", true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var battleData = JSON.parse(xhr.responseText);
+            displayPlayerSpells(battleData.spells);
+        }
+    };
+
+    xhr.send();
+}
+
+// プレイヤーが覚えている魔法をHTMLに表示する関数
+function displayPlayerSpells(spells) {
+    var magicOptions = document.getElementById("magic-options");
+
+    // 一旦中身をクリア
+    magicOptions.innerHTML = "";
+
+    if (spells.length > 0) {
+        // 魔法が存在する場合
+        var header = document.createElement("h3");
+        header.textContent = "魔法を選択";
+        magicOptions.appendChild(header);
+
+        // 各魔法ボタンを作成
+        spells.forEach(function (spell) {
+            var button = document.createElement("button");
+            button.textContent = spell.magic_skill_name;
+            button.onclick = function () {
+                castSpell(spell.magic_skill_name);
+            };
+            magicOptions.appendChild(button);
+        });
+
+        // 魔法オプションを表示
+        magicOptions.style.display = "block";
+    } else {
+        // 魔法が存在しない場合はメッセージを表示
+        magicOptions.textContent = "覚えている魔法がありません。";
+    }
+}
+
+// 魔法を選択したときの処理
+function castSpell(spellName) {
+    // ここに魔法を使用する処理を追加
+
+    // 魔法コメントを表示
+    var magicComment = document.getElementById("magic-comment-text");
+    magicComment.textContent = "プレイヤーが" + spellName + "を使用しました。";
+    document.getElementById("magic-comment").style.display = "block";
+
+    // 「続くボタンを表示」ボタンを表示
+    document.getElementById("toggle-buttons").style.display = "block";
+}
+
+// ページ読み込み時にプレイヤーが覚えている魔法を取得
+document.addEventListener("DOMContentLoaded", function () {
+    fetchPlayerSpells();
+});
+
+    // 魔法オプションを表示
+    document.getElementById("magic-options").style.display = "block";
+}
+
+// 他のボタンに関する処理も同様に追加可能
+// 例えば、逃げるボタンや道具ボタンに関する処理を追加
+
+// 「続くボタンを表示」ボタンがクリックされたときの処理
+function toggleButtons() {
+    // ここに他のボタンの表示・非表示を切り替える処理を追加
+}
+// バトルコメントを表示する関数
+function showBattleComment(comment) {
+    var battleComment = document.getElementById("battle-comment");
+    battleComment.textContent = comment;
+    battleComment.style.display = "block";
+
+    // 「続くボタンを表示」ボタンを表示
+    document.getElementById("toggle-buttons").style.display = "block";
+}
+
+// 「続くボタンを表示」ボタンをクリックしたときの処理
+function showNextComment() {
+    // ここに次のコメントを表示する処理を追加
+
+    // 例: 次のコメントを表示する関数を呼び出す
+    showBattleComment("次のコメントが表示されます。");
+
+    // 「続くボタンを表示」ボタンを非表示にする
+    document.getElementById("toggle-buttons").style.display = "none";
+}
+
+// Ajaxでバトルコメントを取得する関数
+function fetchBattleComment() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/battle-comment", true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var comment = JSON.parse(xhr.responseText).comment;
+            showBattleComment(comment);
+        }
+    };
+
+    xhr.send();
+}
+
+// ページ読み込み時にバトルコメントを取得
+document.addEventListener("DOMContentLoaded", function () {
+    fetchBattleComment();
+});
+
+</script>
+
+</body>
+</html>
+

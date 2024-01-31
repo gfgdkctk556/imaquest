@@ -1,0 +1,241 @@
+package com.example.demo.controller;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.bean.Event;
+import com.example.demo.bean.LineData;
+
+@RestController
+public class MyLineDbController {
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	//ここにチャンネルアクセストークンを貼る！
+	String channelAccessToken = "mlBA539v27Z4o7ZpnQo6rKBmsa/JAt0187P/Y+B1j58/IroIBBWA5ktzm2RRO8lg1xOdWEfnUPUX1RghhvXA3zDfHCdHFPUedEWCCN/5nbVfilst19nQPI5GiobIEgLNo/Jr57o7dSwhF5dNTJyEAwdB04t89/1O/w1cDnyilFU=";
+
+	@PostMapping("/lineDb")
+	@CrossOrigin(origins = "*")
+	public void postApidata(@RequestBody LineData webhookData) {
+		for (Event event : webhookData.getEvents()) {
+
+			String replyToken = event.getReplyToken();
+			String replyText = event.getMessage().getText();
+
+			//ユーザIDを取得する。
+			String userId = event.getSource().getUserId();
+
+			String numataImg = "https://www.itc.ac.jp/_cms/wp-content/themes/itc1.1.0/assets/img/teacher/img-teacher-numata-s-on.jpg";
+
+			//クイックリプライ呼び出し
+			replyQuickReply(replyToken);
+
+			if ("ユーザ登録したい".equals(replyText)) {
+				jdbcTemplate.update("INSERT INTO line_sample ( user_id ,user_plan ) VALUES (?,?);", userId,
+						"FREE PLAN");
+				replyMessage(replyToken, "登録ありがとうございます！");
+			} else if ("国際理工GUYSを見たい".equals(replyText)) {
+				replyImageMessage(replyToken, numataImg, numataImg);
+			} else {
+				replyButtonsTemplate(replyToken);
+			}
+		}
+	}
+
+	/*******************************************************************:
+	 * ここから↓は今は気にしないでOK!
+	 *******************************************************************/
+	private void replyImageMessage(String replyToken, String originalContentUrl, String previewImageUrl) {
+
+		// LINE APIのエンドポイント
+		String url = "https://api.line.me/v2/bot/message/reply";
+
+		// HTTPヘッダーにChannel Access Tokenを設定
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", "Bearer " + channelAccessToken);
+
+		// 送信する画像を設定
+		Map<String, Object> message = new HashMap<>();
+		message.put("type", "image");
+		message.put("originalContentUrl", originalContentUrl);
+		message.put("previewImageUrl", previewImageUrl);
+
+		// リクエストボディを設定（画像用）
+		Map<String, Object> body = new HashMap<>();
+		body.put("replyToken", replyToken);
+		body.put("messages", Collections.singletonList(message));
+
+		// 画像を送信
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+
+	}
+
+	//文字を送りたい場合はこのメソッドを呼び出す。
+	//呼び出す際、第二引数に送りたい文字列を渡す。
+	private void replyMessage(String replyToken, String replyText) {
+		// LINE APIのエンドポイント
+		String url = "https://api.line.me/v2/bot/message/reply";
+
+		// HTTPヘッダーにChannel Access Tokenを設定
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", "Bearer " + channelAccessToken);
+
+		// 送信するメッセージを設定
+		Map<String, Object> message = new HashMap<>();
+		message.put("type", "text");
+		message.put("text", replyText);
+
+		// リクエストボディを設定
+		Map<String, Object> body = new HashMap<>();
+		body.put("replyToken", replyToken);
+		body.put("messages", Collections.singletonList(message));
+
+		System.out.println("test");
+
+		// HTTPリクエストを送信
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+	}
+
+	private void replyQuickReply(String replyToken) {
+		// LINE APIのエンドポイント
+		String url = "https://api.line.me/v2/bot/message/reply";
+
+		// HTTPヘッダーにChannel Access Tokenを設定
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", "Bearer " + channelAccessToken);
+
+		// メッセージの送信
+		Map<String, Object> message = new HashMap<>();
+		message.put("type", "text");
+		message.put("text", "メニューを選んでねー");
+
+		// クイックリプライのアクションを作成
+		Map<String, Object> action1 = new HashMap<>();
+		action1.put("type", "message");
+		action1.put("label", "すしラベル");
+		action1.put("text", "すしテキスト");
+
+		Map<String, Object> action2 = new HashMap<>();
+		action2.put("type", "message");
+		action2.put("label", "てんぷらラベル");
+		action2.put("text", "てんぷらテキスト");
+
+		Map<String, Object> action3 = new HashMap<>();
+		action3.put("type", "location");
+		action3.put("label", "Send location");
+
+		// クイックリプライのアクションをリストに追加
+		List<Map<String, Object>> actions = new ArrayList<>();
+		actions.add(action1);
+		actions.add(action2);
+		actions.add(action3);
+
+		// クイックリプライの項目を作成
+		Map<String, Object> item1 = new HashMap<>();
+		item1.put("type", "action");
+		item1.put("imageUrl",
+				"https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB:Various_sushi,_beautiful_October_night_at_midnight.jpg");
+		item1.put("action", action1);
+
+		Map<String, Object> item2 = new HashMap<>();
+		item2.put("type", "action");
+		item2.put("imageUrl", "https://example.com/tempura.png");
+		item2.put("action", action2);
+
+		Map<String, Object> item3 = new HashMap<>();
+		item3.put("type", "action");
+		item3.put("action", action3);
+
+		// クイックリプライの項目をリストに追加
+		List<Map<String, Object>> items = new ArrayList<>();
+		items.add(item1);
+		items.add(item2);
+		items.add(item3);
+
+		// クイックリプライを作成
+		Map<String, Object> quickReply = new HashMap<>();
+		quickReply.put("items", items);
+
+		// メッセージにクイックリプライを追加
+		message.put("quickReply", quickReply);
+
+		// リクエストボディを設定
+		Map<String, Object> body = new HashMap<>();
+		body.put("replyToken", replyToken);
+		body.put("messages", Collections.singletonList(message));
+
+		// HTTPリクエストを送信
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+	}
+
+	private void replyButtonsTemplate(String replyToken) {
+		// LINE APIのエンドポイント
+		String url = "https://api.line.me/v2/bot/message/reply";
+
+		// HTTPヘッダーにChannel Access Tokenを設定
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization", "Bearer " + channelAccessToken);
+
+		// 1つ目のボタン
+		Map<String, Object> button1 = new HashMap<>();
+		button1.put("type", "message");
+		button1.put("label", "ユーザ登録したい");
+		button1.put("text", "ユーザ登録したい");
+
+		// 2つ目のボタン
+		Map<String, Object> button2 = new HashMap<>();
+		button2.put("type", "message");
+		button2.put("label", "国際理工GUYSを見たい");
+		button2.put("text", "国際理工GUYSを見たい");
+
+		//画面に出したいボタンをリストに詰める。
+		List<Map<String, Object>> buttons = Arrays.asList(button1, button2);
+
+		// テンプレートにボタンを追加
+		Map<String, Object> template = new HashMap<>();
+		template.put("type", "buttons");
+		template.put("text", "要件をどうぞー");
+		template.put("actions", buttons);
+
+		// メッセージにテンプレートを追加
+		Map<String, Object> message = new HashMap<>();
+		message.put("type", "template");
+		message.put("altText", "ボタンテンプレート");
+		message.put("template", template);
+
+		// リクエストボディを設定
+		Map<String, Object> body = new HashMap<>();
+		body.put("replyToken", replyToken);
+		body.put("messages", Collections.singletonList(message));
+
+		// HTTPリクエストを送信
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+	
+
+	}
+	
+}

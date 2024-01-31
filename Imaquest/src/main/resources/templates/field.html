@@ -20,38 +20,38 @@
 
    <!-- プレイヤー名と識別IDの表示 -->
 <div id="playerInfoDisplay" class="player-info-display">
-    プレイヤー名：<span th:text="${playerName != null ? playerName : '受け取れていません'}"></span>
+    プレイヤー名：<span th:text="${session.character_Name != null ? session.character_Name : '受け取れていません'}"></span>
     <br>
-    プレイヤーID：<span th:text="${playerId != null ? playerId : '受け取れていません'}"></span>
+    プレイヤーID：<span th:text="${session.playerId != null ? session.playerId : '受け取れていません'}"></span>
 </div>
-   <script>
-    // セッション情報を表示
-    var playerName = document.querySelector("#playerInfoDisplay span:nth-child(1)").innerText;
-    var playerId = document.querySelector("#playerInfoDisplay span:nth-child(2)").innerText;
+<!--   <script>-->
+<!--    // セッション情報を表示-->
+<!--    var playerName = document.querySelector("#playerInfoDisplay span:nth-child(1)").innerText;-->
+<!--    var playerId = document.querySelector("#playerInfoDisplay span:nth-child(2)").innerText;-->
 
     
-        // メニューボタンがクリックされたときの処理
-        function openMenu() {
-            // メニュー画面に遷移する処理を追加
-            window.location.href = "/menu";
-        }
+<!--        // メニューボタンがクリックされたときの処理-->
+<!--        function openMenu() {-->
+<!--            // メニュー画面に遷移する処理を追加-->
+<!--            window.location.href = "/menu";-->
+<!--        }-->
 
-        // ログイン画面に戻るボタンがクリックされたときの処理
-        function returnToLogin() {
-            // ログイン画面に遷移する処理を追加
-            window.location.href = "/login";
-        }
+<!--        // ログイン画面に戻るボタンがクリックされたときの処理-->
+<!--        function returnToLogin() {-->
+<!--            // ログイン画面に遷移する処理を追加-->
+<!--            window.location.href = "/login";-->
+<!--        }-->
 
-        // 戦闘開始処理
-        function startBattle() {
-            // バトル画面に遷移
-            window.location.href = "/battle";
-        }
+<!--        // 戦闘開始処理-->
+<!--        function startBattle() {-->
+<!--            // バトル画面に遷移-->
+<!--            window.location.href = "/battleStart";-->
+<!--        }-->
 
-        // JavaScriptでのセッション情報表示
-        console.log("セッションID: " + sessionId);
-        console.log("プレイヤー名: " + playerName);
-        console.log("プレイヤーID: " + playerId);
-    </script>
+<!--        // JavaScriptでのセッション情報表示-->
+<!--        console.log("セッションID: " + sessionId);-->
+<!--        console.log("プレイヤー名: " + playerName);-->
+<!--        console.log("プレイヤーID: " + playerId);-->
+<!--    </script>-->
 </body>
 </html>

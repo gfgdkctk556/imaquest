@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="フィールド &apos;testgihou.StopwatchApp.isRunning&apos; を &apos;testgihou.StopwatchApp&apos;にカプセル化します&#x0D;&#x0A;- 元のプロジェクト: &apos;testgihou&apos;&#x0D;&#x0A;- オリジナル要素: &apos;testgihou.StopwatchApp.isRunning&apos;&#x0D;&#x0A;- getter メソッド名: &apos;isRunning&apos;&#x0D;&#x0A;- setter メソッド名: &apos;setRunning&apos;&#x0D;&#x0A;- フィールドの可視性: &apos;public&apos;&#x0D;&#x0A;- 宣言型の getter および setter メソッドを使用" comments="false" declaring="true" description="フィールド &apos;isRunning&apos; をカプセル化します" flags="589830" getter="isRunning" id="org.eclipse.jdt.ui.self.encapsulate" input="/src&lt;testgihou{StopwatchApp.java[StopwatchApp^isRunning" insertion="5" setter="setRunning" stamp="1702439496589" version="1.0" visibility="1"/>
+</session>

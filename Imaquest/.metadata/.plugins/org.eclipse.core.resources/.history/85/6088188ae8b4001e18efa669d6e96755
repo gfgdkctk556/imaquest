@@ -1,0 +1,49 @@
+package model.modeltest;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import model.DeliveryStaff;
+
+public class DeliveryStaffTest {
+
+    @Test
+    public void testGettersAndSetters() {
+        // インスタンスの作成
+        DeliveryStaff staff = new DeliveryStaff();
+
+        // setterを使用して値をセット
+        staff.setStaffId(1);
+        staff.setStaffName("John Doe");
+        staff.setTel("123-456-7890");
+        staff.setAge(25);
+        staff.setHourlyWage(15);
+        staff.setStartTime(8);
+        staff.setEndTime(17);
+
+        // getterを使用して値を取得し、検証
+        assertEquals("StaffIdのgetter/setterのテスト", 1, staff.getStaffId());
+        assertEquals("StaffNameのgetter/setterのテスト", "John Doe", staff.getStaffName());
+        assertEquals("Telのgetter/setterのテスト", "123-456-7890", staff.getTel());
+        assertEquals("Ageのgetter/setterのテスト", 25, staff.getAge());
+        assertEquals("HourlyWageのgetter/setterのテスト", 15, staff.getHourlyWage());
+        assertEquals("StartTimeのgetter/setterのテスト", 8, staff.getStartTime());
+        assertEquals("EndTimeのgetter/setterのテスト", 17, staff.getEndTime());
+    }
+
+    @Test
+    public void testParameterizedConstructor() {
+        // パラメータつきコンストラクタを使用してインスタンスを作成
+        DeliveryStaff staff = new DeliveryStaff(1, "John Doe", "123-456-7890", 25, 15, 8, 17);
+
+        // getterを使用して値を取得し、検証
+        assertEquals("パラメータつきコンストラクタのStaffIdのテスト", 1, staff.getStaffId());
+        assertEquals("パラメータつきコンストラクタのStaffNameのテスト", "John Doe", staff.getStaffName());
+        assertEquals("パラメータつきコンストラクタのTelのテスト", "123-456-7890", staff.getTel());
+        assertEquals("パラメータつきコンストラクタのAgeのテスト", 25, staff.getAge());
+        assertEquals("パラメータつきコンストラクタのHourlyWageのテスト", 15, staff.getHourlyWage());
+        assertEquals("パラメータつきコンストラクタのStartTimeのテスト", 8, staff.getStartTime());
+        assertEquals("パラメータつきコンストラクタのEndTimeのテスト", 17, staff.getEndTime());
+    }
+}

@@ -1,0 +1,45 @@
+// Ajaxで敵情報を取得する関数
+function fetchEnemyInfo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/enemy", true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var enemyInfo = JSON.parse(xhr.responseText);
+            displayEnemy(enemyInfo);
+        }
+    };
+
+    xhr.send();
+}
+
+// 取得した敵情報をHTMLに表示する関数
+function displayEnemy(enemyInfo) {
+    var enemyContainer = document.getElementById("enemy-container");
+    enemyContainer.innerHTML = "";
+
+    // 敵情報を表示
+    var enemyNameElement = document.createElement("p");
+    enemyNameElement.textContent = "敵の名前: " + enemyInfo.enemy_name;
+    enemyContainer.appendChild(enemyNameElement);
+
+    var enemyImageElement = document.createElement("img");
+    enemyImageElement.src = enemyInfo.enemy_image;
+    enemyContainer.appendChild(enemyImageElement);
+
+    var enemyLevelElement = document.createElement("p");
+    enemyLevelElement.textContent = "レベル: " + enemyInfo.enemy_level;
+    enemyContainer.appendChild(enemyLevelElement);
+
+    // 他の敵情報も同様に表示...
+
+    // ドロップアイテム情報
+    var dropRateElement = document.createElement("p");
+    dropRateElement.textContent = "ドロップ率: " + enemyInfo.drop_rate + "%";
+    enemyContainer.appendChild(dropRateElement);
+}
+
+// ページ読み込み時に敵情報を取得
+document.addEventListener("DOMContentLoaded", function () {
+    fetchEnemyInfo();
+});

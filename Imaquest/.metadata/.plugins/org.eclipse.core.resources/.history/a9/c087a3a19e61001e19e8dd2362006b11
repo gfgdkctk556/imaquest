@@ -1,0 +1,115 @@
+package com.example.demo.controller;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.bean.Event;
+import com.example.demo.bean.LineData;
+
+@RestController
+public class MyLineApiController {
+
+    // チャンネルアクセストークンを設定
+    String channelAccessToken = "FqROC7ApTNMVm2sEFOPz5NJE1raxoZG/nMXcwC7uRbubD03vMNqS9fmJOogA1qlQ3IpNNe2meK7eFebNklQHhR48gadmZm30e4B50xpoVyKC8z4NmNJVPWbS+6Sh6G9JrqC9Jzpt14bngL6FEb3tWgdB04t89/1O/w1cDnyilFU=";
+
+    // ユーザーごとにToDoリストを管理するマップ
+    private Map<String, List<String>> userToDoLists = new HashMap<>();
+
+    @PostMapping("/lineApi")
+    @CrossOrigin(origins = "*")
+    public void postApidata(@RequestBody LineData webhookData) {
+        for (Event event : webhookData.getEvents()) {
+            String replyToken = event.getReplyToken();
+            String replyText = event.getMessage().getText();
+
+            if (replyText != null) {
+                // ChatGPTで会話を行い、返答を取得
+                String gptReply = chatWithGPT(replyText);
+
+                // ToDoリスト関連のコマンドを処理
+                if (replyText.startsWith("ToDoを追加：")) {
+                    String newItem = replyText.substring("ToDoを追加：".length());
+                    addToDoItem(event.getSource().getUserId(), newItem);
+                    replyMessage(replyToken, "ToDoアイテムを追加しました: " + newItem);
+                } else if (replyText.equals("ToDoリストを表示")) {
+                    List<String> userToDoList = getUserToDoList(event.getSource().getUserId());
+                    if (userToDoList.isEmpty()) {
+                        replyMessage(replyToken, "ToDoリストは空です。");
+                    } else {
+                        StringBuilder sb = new StringBuilder("ToDoリスト:\n");
+                        for (int i = 0; i < userToDoList.size(); i++) {
+                            sb.append(i + 1).append(". ").append(userToDoList.get(i)).append("\n");
+                        }
+                        replyMessage(replyToken, sb.toString());
+                    }
+                } else if (replyText.startsWith("ToDoを削除：")) {
+                    String itemToDelete = replyText.substring("ToDoを削除：".length());
+                    boolean removed = removeToDoItem(event.getSource().getUserId(), itemToDelete);
+                    if (removed) {
+                        replyMessage(replyToken, "ToDoアイテムを削除しました: " + itemToDelete);
+                    } else {
+                        replyMessage(replyToken, "指定したToDoアイテムが見つかりませんでした: " + itemToDelete);
+                    }
+                } else {
+                    // ChatGPTの返答を送信
+                    replyMessage(replyToken, gptReply);
+                }
+            }
+        }
+    }
+
+    private void addToDoItem(String userId, String newItem) {
+        List<String> userToDoList = userToDoLists.getOrDefault(userId, new ArrayList<>());
+        userToDoList.add(newItem);
+        userToDoLists.put(userId, userToDoList);
+    }
+
+    private List<String> getUserToDoList(String userId) {
+        return userToDoLists.getOrDefault(userId, new ArrayList<>());
+    }
+
+    private boolean removeToDoItem(String userId, String itemToDelete) {
+        List<String> userToDoList = userToDoLists.getOrDefault(userId, new ArrayList<>());
+        boolean removed = userToDoList.remove(itemToDelete);
+        if (removed) {
+            userToDoLists.put(userId, userToDoList);
+        }
+        return removed;
+    }
+
+    private String chatWithGPT(String userMessage) {
+        // ChatGPTに送信するコードを実装してください
+        // ChatGPTからの返答を返すようにします
+        return "ChatGPTからの返答: " + userMessage;
+    }
+
+    private void replyMessage(String replyToken, String replyText) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "text");
+        message.put("text", replyText);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+}

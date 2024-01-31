@@ -57,19 +57,6 @@ public class AccountCreationController {
 
         jdbcTemplate.update(sqlUpdatePlayerCharacter, characterName);
 
-        // タンクの初期キャラクターを作成
-        String sqlInsertTank = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
-                "VALUES (?, 2, 'Tank Skill')";
-        jdbcTemplate.update(sqlInsertTank, characterName);
-
-        // 回復士の初期キャラクターを作成
-        String sqlInsertHealer = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
-                "VALUES (?, 3, 'Healer Skill')";
-        jdbcTemplate.update(sqlInsertHealer, characterName);
-
-        // 魔法使いの初期キャラクターを作成
-        String sqlInsertWizard = "INSERT INTO player_skills (character_Name, skill_type, skill_name) " +
-                "VALUES (?, 4, 'Wizard Skill')";
-        jdbcTemplate.update(sqlInsertWizard, characterName);
+       
     }
 }

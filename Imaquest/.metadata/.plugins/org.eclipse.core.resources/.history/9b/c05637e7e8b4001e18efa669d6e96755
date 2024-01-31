@@ -1,0 +1,33 @@
+package model.modeltest;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import model.DeliveryStaff;
+
+public class DeliveryStaffTest {
+
+    @Test
+    public void testDeliveryStaff() {
+        // DeliveryStaff インスタンスの作成と初期化
+        DeliveryStaff staff = new DeliveryStaff(1, "John Doe", "123-456-7890", 25, 1000, 9, 17);
+
+        // getter を使用して情報を取得し、JUnit の assertEquals メソッドを使用して検証
+        assertEquals(1, staff.getStaffId());
+        assertEquals("John Doe", staff.getStaffName());
+        assertEquals("123-456-7890", staff.getTel());
+        assertEquals(25, staff.getAge());
+        assertEquals(1000, staff.getHourlyWage());
+        assertEquals("9", staff.getStartTime());
+        assertEquals(17, staff.getEndTime());
+
+        // setter を使用して情報を更新
+        staff.setHourlyWage(1200);
+        staff.setAge(26);
+
+        // 更新した情報を再度検証
+        assertEquals(1200, staff.getHourlyWage());
+        assertEquals(26, staff.getAge());
+    }
+}

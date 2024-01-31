@@ -1,0 +1,23 @@
+import java.util.Random;
+
+public class Gtya {
+    public static String Gacha(int randomNumber) {
+        if (randomNumber >= 0 && randomNumber <= 82) {
+            return "★";
+        } else if (randomNumber >= 83 && randomNumber <= 96) {
+            return "★★";
+        } else {
+            return "★★★";
+        }
+    }
+
+    public static void main(String[] args) {
+        // 0から99のランダムな整数を生成
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(100);
+
+        // ガチャを引いて結果を表示
+        String result = Gacha(randomNumber);
+        System.out.println("ガチャの結果: " + result);
+    }
+}
