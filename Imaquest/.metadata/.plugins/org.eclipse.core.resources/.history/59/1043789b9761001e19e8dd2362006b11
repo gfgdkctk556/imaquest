@@ -1,0 +1,176 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.bean.Event;
+import com.example.demo.bean.LineData;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+public class MyLineApiController {
+
+    // ここにチャンネルアクセストークンを貼る！
+    String channelAccessToken = "FqROC7ApTNMVm2sEFOPz5NJE1raxoZG/nMXcwC7uRbubD03vMNqS9fmJOogA1qlQ3IpNNe2meK7eFebNklQHhR48gadmZm30e4B50xpoVyKC8z4NmNJVPWbS+6Sh6G9JrqC9Jzpt14bngL6FEb3tWgdB04t89/1O/w1cDnyilFU=";
+
+    @PostMapping("/lineApi")
+    @CrossOrigin(origins = "*")
+    public void postApidata(@RequestBody LineData webhookData) {
+        for (Event event : webhookData.getEvents()) {
+            String replyToken = event.getReplyToken();
+            String replyText = event.getMessage().getText();
+
+            if (replyText.startsWith("質問")) {
+                String gptResult = openAi(replyText);
+                replyMessage(replyToken, gptResult);
+            }
+
+            if ("何か聞きたい".equals(replyText)) {
+                replyMessage(replyToken, "質問をどうぞ。質問の先頭に「質問」と付けてください。");
+            } else if ("国際理工GUYSを見たい".equals(replyText)) {
+                // 画像を返す
+                String numataImg = "https://www.itc.ac.jp/_cms/wp-content/themes/itc1.1.0/assets/img/teacher/img-teacher-numata-s-on.jpg";
+                replyImageMessage(replyToken, numataImg, numataImg);
+            } else {
+                // ボタンを表示
+                replyButtonsTemplate(replyToken);
+            }
+        }
+    }
+
+    private void replyImageMessage(String replyToken, String originalContentUrl, String previewImageUrl) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "image");
+        message.put("originalContentUrl", originalContentUrl);
+        message.put("previewImageUrl", previewImageUrl);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+
+    private void replyMessage(String replyToken, String replyText) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "text");
+        message.put("text", replyText);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+
+    private void replyButtonsTemplate(String replyToken) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> button1 = new HashMap<>();
+        button1.put("type", "message");
+        button1.put("label", "何か聞きたい");
+        button1.put("text", "何か聞きたい");
+
+        Map<String, Object> button2 = new HashMap<>();
+        button2.put("type", "message");
+        button2.put("label", "国際理工GUYSを見たい");
+        button2.put("text", "国際理工GUYSを見たい");
+
+        Map<String, Object> button3 = new HashMap<>();
+        button3.put("type", "uri");
+        button3.put("label", "有料プランに加入したい");
+        button3.put("uri", "https://buy.stripe.com/test_9AQaG70Qrgi45Fe288");
+
+        List<Map<String, Object>> buttons = List.of(button1, button2, button3);
+
+        Map<String, Object> template = new HashMap<>();
+        template.put("type", "buttons");
+        template.put("text", "要件をどうぞー");
+        template.put("actions", buttons);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "template");
+        message.put("altText", "ボタンテンプレート");
+        message.put("template", template);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+
+    private String openAi(String replyText) {
+        // ChatGPTに送るメッセージを生成
+        String preMessage = "次の質問に答えて。専門用語を使わずに。\n" + replyText;
+        // ChatGPTのAPIキー
+        String chatGptApiKey = "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";
+        // ChatGPTのエンドポイント
+        String url = "https://api.openai.com/v1/chat/completions";
+        // 利用するモデル（gpt-3.5-turboを使用）
+        String model = "gpt-3.5-turbo";
+        // ChatGPTが求めるデータを生成
+        String message = "{\"role\": \"system\", \"content\": \"返答は日本語で\"},{\"role\": \"user\", \"content\": \"" + preMessage + "\"}";
+        String content = "";
+
+        try {
+            // HTTP通信の設定
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + chatGptApiKey);
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("model", model);
+            request.put("messages", Collections.singletonMap(Map.of("role", "system", "content", "返答は日本語で"), Map.of("role", "user", "content", preMessage)));
+
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(request, headers);
+
+            // HTTPリクエストを送信
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> response = restTemplate.postForObject(url, requestEntity, Map.class);
+
+            if (response != null && response.containsKey("choices")) {
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
+                if (!choices.isEmpty() && choices.get(0).containsKey("message")) {
+                    Map<String, Object> messageObject = (Map<String, Object>) choices.get(0).get("message");
+                    if (messageObject.containsKey("content")) {
+                        content = (String) messageObject.get("content");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            content = "エラーが発生しました。";
+        }
+
+        return content;
+    }
+}

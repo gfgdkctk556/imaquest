@@ -1,0 +1,30 @@
+// テストクラスの例
+package test;
+
+import model.DeliveryStaff;
+
+public class DeliveryStaffTest {
+
+    public static void main(String[] args) {
+        // DeliveryStaff インスタンスの作成と初期化
+        DeliveryStaff staff = new DeliveryStaff(1, "John Doe", "123-456-7890", 25, 1000, 9, 17);
+
+        // getter を使用して情報を取得し、表示
+        System.out.println("Staff ID: " + staff.getStaffId());
+        System.out.println("Staff Name: " + staff.getStaffName());
+        System.out.println("Telephone: " + staff.getTel());
+        System.out.println("Age: " + staff.getAge());
+        System.out.println("Hourly Wage: " + staff.getHourlyWage());
+        System.out.println("Start Time: " + staff.getStartTime());
+        System.out.println("End Time: " + staff.getEndTime());
+
+        // setter を使用して情報を更新
+        staff.setHourlyWage(1200);
+        staff.setAge(26);
+
+        // 更新した情報を再度表示
+        System.out.println("\nUpdated Information:");
+        System.out.println("Hourly Wage: " + staff.getHourlyWage());
+        System.out.println("Age: " + staff.getAge());
+    }
+}

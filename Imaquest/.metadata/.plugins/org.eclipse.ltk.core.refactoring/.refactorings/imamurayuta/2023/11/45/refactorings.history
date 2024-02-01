@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;ItoController.java&apos; to &apos;imamurayuta/src/main/java/com.example.demo.controller&apos;&#x0D;&#x0A;- 元のプロジェクト: &apos;imamurayuta&apos;&#x0D;&#x0A;- 宛先要素: &apos;imamurayuta/src/main/java/com.example.demo.controller&apos;&#x0D;&#x0A;- オリジナル要素: &apos;com.example.demo.controller.ItoController.java&apos;" description="コンパイル単位をコピー" destination="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.demo.controller" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.example.demo.controller{ItoController.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1699596320805" units="1" version="1.0"/>
+</session>

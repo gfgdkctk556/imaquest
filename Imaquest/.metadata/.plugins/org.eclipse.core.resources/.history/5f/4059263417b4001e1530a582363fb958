@@ -1,0 +1,106 @@
+package com.example.demo.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class NewYearController {
+
+	//画面表示用
+	@RequestMapping(path = "/newyearfirst", method = RequestMethod.GET)
+	public String first() {
+
+		return "newyearfirst";
+	}
+
+	//画面表示用
+	@RequestMapping(path = "/newyearsecond", method = RequestMethod.GET)
+	public String second() {
+
+		return "newyearsecond";
+	}
+
+	//画面表示用
+	@RequestMapping(path = "/newyearthird", method = RequestMethod.GET)
+	public String third() {
+
+		return "newyearthird";
+	}
+
+//	/*
+//	 *＜サンプル＞
+//	 * ！！！！！！コメント外さないで！！！！！！！
+//	 * URLの一部分を変数として扱う。
+//	 * 
+//	 * ＜説明＞
+//	 * @RequestMapping(path="/{変数名}")のように書く事で、
+//	 * URLの該当部分を変数として扱う事が出来る。
+//	 * ポイントを授業内で解説するので良く聞く事！
+//	 */
+//	//	@RequestMapping(path = "/urlparamexample/{testtest}", method = RequestMethod.GET)
+//	//	public String first(@PathVariable String testtest, Model model) {
+//	//
+//	//		model.addAttribute("aiueo", testtest);
+//	//		return "urlparam";
+//	//	}
+//
+//	/*コメント外してね
+//	 * ＜練習問題①＞
+//	 * URLの末尾を変数として扱い、Sysoutで表示しなさい。
+//	 * 尚変数として扱う際の変数名は「firstParam」とする事
+//	 */
+////		@RequestMapping(path = "/newyearfirst/{firstParam}", method = RequestMethod.GET)
+////		public String first(@PathVariable String firstParam) {
+////	
+////			System.out.println(firstParam+"を踏んだ！");
+////	
+////			return "newyearfirst";
+////		}
+//
+	/*コメント外してね
+	 * ＜練習問題②＞
+	 * URLの末尾を変数として扱い、sessionに格納しなさい。
+	 * 尚変数として扱う際の変数名は「secondParam」とし、
+	 * sessionにしまう際の名前は「secondParam」とする事
+	 */
+	 @RequestMapping(path = "/newyearsecond/{secondParam}", method = RequestMethod.GET)
+	    public String secondParam(@PathVariable String secondParam, HttpSession session ) {
+
+	        // セッションに格納する
+	        session.setAttribute("secondParam", secondParam);
+	        
+	       
+
+	        return "newyearsecond";
+	    }
+
+//	/*コメント外してね
+//	 * ＜練習問題③＞
+//	 * URLの末尾を変数として扱い、sessionに格納しなさい。
+//	 * 尚変数として扱う際の変数名は「thirdParam1」、「thirdParam2」とする事。
+//	 * sessionにしまう際の名前は「thirdParam」とし、
+//	 * 格納する値は「thirdParam1」と「thirdParam2」を結合したものとする。
+//	 * 
+//	 * 例：thirdParam1が「あ」でthirdParam2が「い」なら「あい」をセッションに格納する事
+//	 */
+		@RequestMapping(path = "/newyearthird/{thirdParam1}/{thirdParam2}", method = RequestMethod.GET)
+			public String third(@PathVariable String thirdParam1,@PathVariable String thirdParam2,HttpSession session) {
+		
+				//セッションに格納する。
+			session.setAttribute("thirdParam","注文したのは"+thirdParam1+"です"+"具体的には"+thirdParam2);
+				return "newyearthird";
+			}
+
+//	/*コメント外してね
+//	 * ＜練習問題④＞
+//	 * 練習問題③で作成したControllerにDB検索処理を追加しなさい。
+//	 * テーブル「spitem」に対し検索をかけ、カテゴリと商品名で絞り込みをかける事。
+//	 * 検索を行った後、検索結果が１件以上であればSysoutで「OK」とコンソール表示をし、
+//	 * そうでないなら「NG」と表示する事
+//	 * 
+//	 */
+}

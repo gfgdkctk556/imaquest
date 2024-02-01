@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Page</title>
+</head>
+<body>
+
+<h1>Battle Page</h1>
+
+<!-- Check if battle has started -->
+<div th:if="${battleStarted}">
+    <!-- Display player information -->
+    <h2>Player Information</h2>
+    <p th:text="${playerInfo.character_name}"></p>
+    <p th:text="${playerInfo.character_hp}"></p>
+    <!-- Display enemy information -->
+    <div><!-- 修正点 -->
+        <h3>敵の情報</h3>
+        <p>名前: ${enemy.get("enemy_name")}</p>
+        <p>体力: ${enemy.get("enemy_hp")}</p>
+        <p>防御力: ${enemy.get("enemy_defense")}</p>
+        <!-- 他の敵の情報も必要に応じて表示できます -->
+    </div><!-- 修正点 -->
+</div>
+
+<!-- Display battle result message -->
+<p th:text="${battleResultMessage}"></p>
+
+<!-- Actions menu (attack, magic, item) -->
+<div>
+    <form action="/battle" method="get">
+        <button type="submit" name="playerAction" value="attack">Attack</button>
+        <button type="submit" name="playerAction" value="magic">Magic</button>
+        <button type="submit" name="playerAction" value="item">Item</button>
+    </form>
+</div>
+
+
+</body>
+</html>

@@ -1,102 +1,122 @@
 package com.example.demo.controller;
 
-    	import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.service.AttackService;
+import com.example.demo.service.MagicService;
 
 @Controller
 public class BattleController {
+	private final BattleSQLController battleSQLController;
+	private final AttackService attackService;
+	private final MagicService magicService;
 
-    private final JdbcTemplate jdbcTemplate;
-    private final BattleSQLController battleSQLController;
+	@Autowired
+	public BattleController(BattleSQLController battleSQLController, AttackService attackService, MagicService magicService) {
+		this.battleSQLController = battleSQLController;
+		this.attackService = attackService;
+		this.magicService = magicService;
+	}
 
-    public BattleController(JdbcTemplate jdbcTemplate, BattleSQLController battleSQLController) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.battleSQLController = battleSQLController;
-    }
+	//戦闘開始準備
+	@GetMapping("/battleStart")
+	public String battleStart(HttpSession session){
+		session.setAttribute("flag", "開始");
+		System.out.println("通ったよ～ん");
+		return "redirect:/battle";
+	}
 
-    @GetMapping("/battle")
-    public String startBattle(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Integer playerId = (Integer) session.getAttribute("playerId");
+	//バトル中処理
+	@GetMapping("/battle")
+	public String startBattle(Model model, HttpSession session,
+			@RequestParam(name = "playerAction", required = false) String playerAction,
+			@RequestParam(name = "selectedSpellName", required = false) String selectedSpellName) {
 
-        if (playerId == null) {
-            return "redirect:/login";
-        }
+		Integer playerId = (Integer) session.getAttribute("playerId");
+		System.out.println("flag内" + session.getAttribute("flag"));
+		if (playerId == null) {
+			return "redirect:/login";
+		}
+		if (session.getAttribute("flag").equals("終了")) {
+			model.addAttribute("battleResultMessage", "死体打ちすな");
+			Map<String, Object> currentEnemy = new HashMap<>();
+			currentEnemy.put("enemy_name", "");
+			currentEnemy.put("enemy_level", "");
+			currentEnemy.put("enemy_hp", "");
+            model.addAttribute("enemy", currentEnemy);
+            //バトル終了後の処理記述
+			if (session.getAttribute("flag").equals("field")) {
+				return "field";
+			}
+				processBattleEnd(playerId, model);
+                return "battle";			
+		}
 
-        Map<String, Object> playerInfo = getPlayerInfo(playerId);
-        List<Map<String, Object>> enemies = getEnemies();
+			// もしモンスターがまだセッションにない場合、新しいモンスターを取得してセッションに格納
+		if(session.getAttribute("flag").equals("開始")) {
+			battleSQLController.setCurrentEnemy(session);
+			
+		}
+			Map<String, Object> currentEnemy = (Map<String, Object>) session.getAttribute("currentEnemy");
 
-        model.addAttribute("playerInfo", playerInfo);
-        model.addAttribute("enemies", enemies);
+		// セッションからプレイヤー情報を取得
+		String playerName = (String) session.getAttribute("character_Name");
+		Integer playerLevel = (Integer) session.getAttribute("character_Level");
+		Integer playerHP = (Integer) session.getAttribute("character_HP");
+		Integer playerMP = (Integer) session.getAttribute("character_MP");
 
-        if (request.getParameter("startBattle") != null) {
-            model.addAttribute("battleStarted", true);
-        }
+		// プレイヤー情報をテンプレートに追加
+		model.addAttribute("playerName", playerName);
+		model.addAttribute("playerLevel", playerLevel);
+		model.addAttribute("playerHP", playerHP);
+		model.addAttribute("playerMP", playerMP);
+		model.addAttribute("enemies", session.getAttribute("monsterHP"));
+		model.addAttribute("enemy", currentEnemy);
 
-        if (request.getParameter("playerAction") != null) {
-            String playerAction = request.getParameter("playerAction");
-            switch (playerAction) {
-                case "attack":
-                    performPlayerAttack(playerId, model);
-                    break;
-                case "magic":
-                	
-                    // 魔法の処理を追加
-                    break;
-                case "item":
-                    // アイテムの処理を追加
-                    break;
-                default:
-                    break;
-            }
-        }
+		if (playerAction != null) {
+			switch (playerAction) {
+			case "attack":
+				String attackServiceModel = attackService.performAttack(playerId, model, session);
+				model.addAttribute("attackServiceModel", attackServiceModel);
+				break;
+			case "magic":
+				String magicServiceModel = magicService.performMagic(playerId, selectedSpellName, model, session);
+				model.addAttribute("magicServiceModel", magicServiceModel);
+				break;
+				// 他のアクションに対する処理も追加
+			default:
+				break;
+			}
 
-        battleSQLController.processBattleRewards(playerId, 1, 1, 1);
+		}
 
-        return "battle";
-    }
+		// プレイヤーと敵のHPの変化を取得
+		Integer playerHPChange = (Integer) session.getAttribute("playerHPChange");
+		Integer enemyHPChange = (Integer) session.getAttribute("enemyHPChange");
 
-    private Map<String, Object> getPlayerInfo(int playerId) {
-        String query = "SELECT * FROM player_characters WHERE player_id = ?";
-        return jdbcTemplate.queryForMap(query, playerId);
-    }
+		// テンプレートにHP変化を追加
+		model.addAttribute("playerHPChange", playerHPChange != null ? playerHPChange : 0);
+		model.addAttribute("enemyHPChange", enemyHPChange != null ? enemyHPChange : 0);
 
-    private List<Map<String, Object>> getEnemies() {
-        String query = "SELECT * FROM enemy_info";
-        return jdbcTemplate.queryForList(query);
-    }
+		// バトルメッセージを取得
+		String battleResultMessage = (String) model.getAttribute("battleResultMessage");
+		model.addAttribute("battleResultMessage", battleResultMessage);
+		if(!(session.getAttribute("flag").equals("終了"))) {
+		session.setAttribute("flag", "バトル中");}
+		return "battle";
+	}
 
-    private void performPlayerAttack(int playerId, Model model) {
-        Map<String, Object> playerInfo = getPlayerInfo(playerId);
-        List<Map<String, Object>> enemies = getEnemies();
-
-        int playerAttack = (int) playerInfo.get("character_Attack");
-        int enemyDefense = (int) enemies.get(0).get("enemy_defense");
-        int playerDamage = calculateDamage(playerAttack, enemyDefense);
-
-        Map<String, Object> enemy = enemies.get(0);
-        int enemyHP = (int) enemy.get("enemy_hp");
-        enemyHP -= playerDamage;
-
-        if (enemyHP <= 0) {
-            battleSQLController.processEnemyDefeat(playerId, enemy);
-        }
-
-        model.addAttribute("battleResultMessage", "プレイヤーが" + playerDamage + "ダメージを与えました。");
-    }
-
-    private int calculateDamage(int playerAttack, int enemyDefense) {
-        Random random = new Random();
-        int baseDamage = playerAttack - enemyDefense + random.nextInt(5);
-        return Math.max(baseDamage, 1);
-    }
+	private void processBattleEnd(Integer playerId, Model model) {
+		// バトル終了後の処理をここに追加
+		// 例: 勝利画面や敗北画面への遷移
+	}
 }

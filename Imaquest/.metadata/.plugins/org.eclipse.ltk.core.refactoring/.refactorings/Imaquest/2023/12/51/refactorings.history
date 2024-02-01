@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="リソース名 &apos;Imaquest/src/main/java/com/example/demo/controller/BattkesqlController.java&apos; を &apos;BattlesqlController.java&apos; に変更します" description="リソース &apos;BattkesqlController.java&apos; の名前変更" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/com/example/demo/controller/BattkesqlController.java" name="BattlesqlController.java" stamp="1703038698832" updateReferences="true"/>
+</session>

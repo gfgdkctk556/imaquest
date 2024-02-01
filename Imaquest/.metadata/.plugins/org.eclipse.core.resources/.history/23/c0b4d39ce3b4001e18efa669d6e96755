@@ -1,0 +1,42 @@
+package model.modeltest;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import model.Customer;
+
+public class CustomerTest {
+
+    @Test
+    public void testGettersAndSetters() {
+        // インスタンスの作成
+        Customer customer = new Customer();
+
+        // setterを使用して値をセット
+        customer.setCustId(1);
+        customer.setCustName("John Doe");
+        customer.setKana("じょん　どう");
+        customer.setTel("123-456-7890");
+        customer.setAddress("123 Main St");
+
+        // getterを使用して値を取得し、検証
+        assertEquals(1, customer.getCustId());
+        assertEquals("John Doe", customer.getCustName());
+        assertEquals("じょん　どう", customer.getKana());
+        assertEquals("123-456-7890", customer.getTel());
+        assertEquals("123 Main St", customer.getAddress());
+    }
+
+    @Test
+    public void testParameterizedConstructor() {
+        // パラメータつきコンストラクタを使用してインスタンスを作成
+        Customer customer = new Customer(1, "John Doe", "じょん　どう", "123-456-7890", "123 Main St");
+
+        // getterを使用して値を取得し、検証
+        assertEquals(1, customer.getCustId());
+        assertEquals("John Doe", customer.getCustName());
+        assertEquals("じょん　どう", customer.getKana());
+        assertEquals("123-456-7890", customer.getTel());
+        assertEquals("123 Main St", customer.getAddress());
+    }
+}

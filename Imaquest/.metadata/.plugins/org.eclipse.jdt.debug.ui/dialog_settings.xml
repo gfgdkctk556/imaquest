@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.jdt.debug.ui.MAIN_METHOD_SELECTION_DIALOG">
+		<item key="ShowStatusLine" value="true"/>
+		<item key="History" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History&gt;&#x0D;&#x0A;&lt;historyRootNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=JavaProduct/src&amp;lt;jointest.uc01{JoinTest_OrderControl01.java[JoinTest_OrderControl01&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=JavaProduct/src&amp;lt;{KiddaLaEntry.java[KiddaLaEntry&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=test/C:\/pleiades\/eclipse\/plugins\/org.junit_4.13.2.v20211018-1956.jar=/javadoc_location=/http:\/\/junit.org\/junit4\/javadoc\/latest\/=/=/module=/true=/&amp;lt;org.junit.runner(JUnitCore.class[JUnitCore&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=test/src&amp;lt;test{Test2.java[Test2&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=MySecurity/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&amp;lt;controller{MySecurityApplication.java[MySecurityApplication&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=MySecurity/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&amp;lt;com.example.demo{MySecurityApplication.java[MySecurityApplication&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=MyFirstApp/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&amp;lt;com.example.demo{MyFirstAppApplication.java[MyFirstAppApplication&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=testgihou/src&amp;lt;testgihou{FizzBuzz.java[FizzBuzz&lt;/infoNode&gt;&#x0D;&#x0A;&lt;infoNode&gt;=Imaquest/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&amp;lt;com.example.demo{ImaquestApplication.java[ImaquestApplication&lt;/infoNode&gt;&#x0D;&#x0A;&lt;/historyRootNode&gt;&#x0D;&#x0A;&lt;/History&gt;"/>
+		<section name="DialogBoundsSettings">
+			<item key="DIALOG_HEIGHT" value="500"/>
+			<item key="DIALOG_WIDTH" value="600"/>
+			<item key="DIALOG_X_ORIGIN" value="570"/>
+			<item key="DIALOG_Y_ORIGIN" value="48"/>
+			<item key="DIALOG_FONT_NAME" value="1|Yu Gothic UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Yu Gothic UI"/>
+		</section>
+	</section>
+</section>

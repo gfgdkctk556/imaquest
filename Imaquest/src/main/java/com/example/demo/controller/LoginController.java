@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +37,25 @@ public class LoginController {
 
             // プレイヤーIDを取得
             Integer playerId = getPlayerId(character_Name);
-            
+
             // プレイヤーIDが取得できた場合、セッションに設定
             if (playerId != null) {
+                // プレイヤーの全情報を取得
+            	Map<String, Object> playerInfo = getPlayerInfo(playerId);
                 session.setAttribute("playerId", playerId);
+                session.setAttribute("character_Name", playerInfo.get("character_Name"));
+                session.setAttribute("character_Level", playerInfo.get("character_Level"));
+                session.setAttribute("character_Experience", playerInfo.get("character_Experience"));
+                session.setAttribute("character_HP", playerInfo.get("character_HP"));
+                session.setAttribute("character_MP", playerInfo.get("character_MP"));
+                session.setAttribute("character_Attack", playerInfo.get("character_Attack"));
+                session.setAttribute("character_Defense", playerInfo.get("character_Defense"));
+                session.setAttribute("character_Image", playerInfo.get("character_Image"));
+                session.setAttribute("first_login", playerInfo.get("first_login"));
+                session.setAttribute("character_gold", playerInfo.get("character_gold"));
+                session.setAttribute("char_type", playerInfo.get("char_type"));
+                // 他のプレイヤー情報も必要に応じてセッションに追加
+                System.out.println(playerInfo.get("character_HP"));
             } else {
                 // エラーハンドリング: プレイヤーIDが取得できない場合の処理
                 return "redirect:/ng";
@@ -46,9 +63,6 @@ public class LoginController {
 
             String insertSql = "INSERT INTO session_data (session_id, character_name) VALUES (?, ?)";
             jdbcTemplate.update(insertSql, sessionId, character_Name);
-
-            // プレイヤー名をセッションに設定
-            session.setAttribute("character_Name", character_Name);
 
             // Check the value of the first_login column
             String checkFirstLoginSql = "SELECT first_login FROM player_characters WHERE character_Name = ?";
@@ -72,5 +86,11 @@ public class LoginController {
     private Integer getPlayerId(String character_Name) {
         String sqlGetPlayerId = "SELECT player_id FROM player_characters WHERE character_Name = ?";
         return jdbcTemplate.queryForObject(sqlGetPlayerId, Integer.class, character_Name);
+    }
+
+    // プレイヤーIDからプレイヤー情報を取得するメソッド
+    private Map<String, Object> getPlayerInfo(int playerId) {
+        String selectPlayerInfoSql = "SELECT * FROM player_characters WHERE player_id = ?";
+        return jdbcTemplate.queryForMap(selectPlayerInfoSql, playerId);
     }
 }

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="&apos;KiddaLaController.class&apos; を &apos;control&apos; に移動" description="&apos;KiddaLaController.class&apos; を &apos;control&apos; に移動" destination="src/control" element1="src/control/control/KiddaLaController.class" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1704853656207" updateReferences="true"/>&#x0A;<refactoring comment="リソース名 &apos;Kidda-la (Java+JDBC)/JunitTest&apos; を &apos;ActionTest&apos; に変更します" description="リソース &apos;JunitTest&apos; の名前変更" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="JunitTest" name="ActionTest" stamp="1704857256144" updateReferences="true"/>
+</session>

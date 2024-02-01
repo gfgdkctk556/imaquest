@@ -1,0 +1,147 @@
+package com.example.demo.controller;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.bean.Event;
+import com.example.demo.bean.LineData;
+
+@RestController
+public class MyLineApiController {
+
+    // チャンネルアクセストークン
+    String channelAccessToken = "FqROC7ApTNMVm2sEFOPz5NJE1raxoZG/nMXcwC7uRbubD03vMNqS9fmJOogA1qlQ3IpNNe2meK7eFebNklQHhR48gadmZm30e4B50xpoVyKC8z4NmNJVPWbS+6Sh6G9JrqC9Jzpt14bngL6FEb3tWgdB04t89/1O/w1cDnyilFU=";
+
+    // ユーザーごとのToDoリストを管理するマップ
+    private Map<String, List<String>> userToDoLists = new HashMap<>();
+
+    @PostMapping("/lineApi")
+    @CrossOrigin(origins = "*")
+    public void postApidata(@RequestBody LineData webhookData) {
+        for (Event event : webhookData.getEvents()) {
+            String replyToken = event.getReplyToken();
+            String replyText = event.getMessage().getText();
+            String userId = event.getSource().getUserId(); // ユーザーIDを取得
+
+            if (replyText.startsWith("追加：")) {
+                // ユーザーのToDoリストを取得または初期化
+                List<String> toDoList = userToDoLists.getOrDefault(userId, new ArrayList<>());
+
+                // ToDoアイテムを抽出して追加
+                String toDoItem = replyText.replace("追加：", "");
+                toDoList.add(toDoItem);
+
+                // ユーザーのToDoリストを更新
+                userToDoLists.put(userId, toDoList);
+
+                // 確認メッセージを送信
+                replyMessage(replyToken, toDoItem + " をToDoリストに追加しました。");
+            } else if ("ToDoリストを表示".equals(replyText)) {
+                // ユーザーのToDoリストを取得
+                List<String> toDoList = userToDoLists.getOrDefault(userId, new ArrayList<>());
+
+                // ToDoリストを表示
+                StringBuilder responseText = new StringBuilder("ToDoリスト:\n");
+                for (int i = 0; i < toDoList.size(); i++) {
+                    responseText.append(i + 1).append(". ").append(toDoList.get(i)).append("\n");
+                }
+
+                // ユーザーにToDoリストを送信
+                replyMessage(replyToken, responseText.toString());
+            } else {
+                // ボタンを表示
+                replyButtonsTemplate(replyToken);
+            }
+        }
+    }
+
+    private void replyImageMessage(String replyToken, String originalContentUrl, String previewImageUrl) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "image");
+        message.put("originalContentUrl", originalContentUrl);
+        message.put("previewImageUrl", previewImageUrl);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+
+    private void replyMessage(String replyToken, String replyText) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "text");
+        message.put("text", replyText);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+
+    private void replyButtonsTemplate(String replyToken) {
+        String url = "https://api.line.me/v2/bot/message/reply";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + channelAccessToken);
+
+        Map<String, Object> button1 = new HashMap<>();
+        button1.put("type", "message");
+        button1.put("label", "何か聞きたい");
+        button1.put("text", "何か聞きたい");
+
+        Map<String, Object> button2 = new HashMap<>();
+        button2.put("type", "message");
+        button2.put("label", "国際理工GUYSを見たい");
+        button2.put("text", "国際理工GUYSを見たい");
+
+        Map<String, Object> button3 = new HashMap<>();
+        button3.put("type", "uri");
+        button3.put("label", "有料プランに加入したい");
+        button3.put("uri", "https://buy.stripe.com/test_9AQaG70Qrgi45Fe288");
+
+        List<Map<String, Object>> buttons = List.of(button1, button2, button3);
+
+        Map<String, Object> template = new HashMap<>();
+        template.put("type", "buttons");
+        template.put("text", "要件をどうぞー");
+        template.put("actions", buttons);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "template");
+        message.put("altText", "ボタンテンプレート");
+        message.put("template", template);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("replyToken", replyToken);
+        body.put("messages", Collections.singletonList(message));
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
+    }
+}

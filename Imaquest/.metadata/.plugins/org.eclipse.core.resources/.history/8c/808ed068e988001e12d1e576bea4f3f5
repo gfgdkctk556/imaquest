@@ -1,0 +1,65 @@
+package com.example.demo.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class DemoLoginController {
+
+    // ログイン画面の表示
+    @GetMapping("/demologin")
+    public String showLoginForm() {
+        return "demologin";
+    }
+
+    // ログイン処理（デモプレイ用：簡略化）
+    @PostMapping("/demologin")
+    public String login(@RequestParam String username, Model model) {
+        // TODO: デモプレイ用のログイン処理（ここに実際の処理を追加）
+
+        if ("ng".equalsIgnoreCase(username)) {
+            return "demong"; // ログインNGの場合の画面遷移
+        }
+
+        model.addAttribute("error", true);
+        return "defield"; // ログイン出来た時field画面に遷移
+    }
+    
+ // ログイン画面に戻る
+    @GetMapping("/returntologin")
+    public String returnToLogin() {
+        return "demologin";
+    }
+
+    // 登録画面の表示
+    @GetMapping("/demoregister")
+    public String showRegisterForm(Model model) {
+        // メッセージを空でセットしておく
+        model.addAttribute("message", "");
+        return "demoregister";
+    }
+
+    // 登録処理（デモプレイ用：簡略化）
+    @PostMapping("/demoregister")
+    public String register(@RequestParam String playerId, @RequestParam String password, Model model) {
+        // TODO: デモプレイ用の登録処理（ここに実際の処理を追加）
+
+        model.addAttribute("message", "アカウント作成が完了しました！");
+        return "demologin"; // 登録完了後の画面遷移
+    }
+
+    // メニュー画面の表示
+    @GetMapping("/menu")
+    public String showMenu() {
+        return "menu";
+    }
+
+ // フィールド画面に戻る
+    @GetMapping("/demofield")
+    public String returnToField() {
+        return "demofield";
+    }
+}

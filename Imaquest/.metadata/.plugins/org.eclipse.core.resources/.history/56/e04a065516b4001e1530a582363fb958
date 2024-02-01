@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>練習問題③</title>
+</head>
+<body>
+
+	<h2>練習問題③</h2>
+	<h3>以下のaタグを完成させ、リンクを有効にしよう。</h3>
+	<h3>リンクを有効にした後、Controllerを完成させてね</h3>
+
+	<a th:href="@{/newyearthird/飲食品/コーヒー}">飲食品(コーヒー）</a>
+	<a th:href="@{/newyearthird/飲食品/ラーメン}">飲食品(ラーメン）</a>
+
+
+	<h2>練習問題③-2</h2>
+	<h3>Controllerでsessionに格納した値を↓のpタグに表示しよう</h3>
+	<p th:text="${thirdParam1}"></p>
+	<p th:text="${thirdParam2}"></p>
+	<h6>【例】注文したのは「書籍」です。具体的には「ITワールドです」</h6>
+
+	<hr>
+	<h2>練習問題④</h2>
+	<h3>Controllerのコメント文を読んで取り組んでね（HTML）は変更する必要無し。</h3>
+</body>
+</html>

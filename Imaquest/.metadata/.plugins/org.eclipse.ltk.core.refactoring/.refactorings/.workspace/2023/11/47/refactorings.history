@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="リソース &apos;Imaquest/src/main/resources/static/battle.html&apos; を削除" deleteContents="false" description="リソース &apos;Imaquest/src/main/resources/static/battle.html&apos; を削除" element1="/Imaquest/src/main/resources/static/battle.html" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1700794451168"/>
+</session>
