@@ -1,74 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
+!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/mura.css">
-    <title>RPG 村画面</title>
+    <title>村のページ</title>
+    <link rel="stylesheet" href="/css/mura.css">
+    <script src="/js/mura.js"></script>
 </head>
 <body>
 
-<div class="menu-container">
-    <div class="menu-header">村画面</div>
-    
-    <!-- 所持ゴールド表示領域 -->
-    <div class="gold-section">
-        <span>所持ゴールド: </span>
-        <span id="gold-amount">100</span> <!-- ここは実際の所持ゴールドを表示する領域 -->
+<div id="itemDetails"></div>
+
+<h2>村へようこそ</h2>
+
+<!-- 所持ゴールド -->
+<p>所持ゴールド：<span id="playerGold" th:text="${playerGold}+G"></span></p>
+
+<!-- アイテム一覧と装備一覧のコンテナ -->
+<div class="item-equipment-container">
+
+    <!-- アイテム一覧表示 -->
+    <div class="list-container">
+        <h3>アイテム一覧</h3>
+        <ul id="itemList" class="item-list">
+            <!-- アイテム名をクリックすると詳細を表示 -->
+            <li th:each="item : ${itemList}" th:text="${item}" onclick="showItemDetails(this.innerText)"></li>
+        </ul>
     </div>
 
-    <div class="menu-content">
-        <!-- Left Column -->
-        <div class="menu-section equipment-purchase">
-            <h2>装備の購入</h2>
-            <ul id="equipment-list">
-                <!-- 装備一覧 -->
-                <li onclick="purchaseEquipment('新しい剣', 50)">新しい剣 - 50ゴールド</li>
-                <li onclick="purchaseEquipment('強力な盾', 30)">強力な盾 - 30ゴールド</li>
-                <!-- 他のアイテムも追加 -->
-            </ul>
-            <div id="selected-purchase-status">
-                <!-- 購入した装備のステータス表示 -->
-            </div>
-        </div>
-
-        <!-- Center Column -->
-        <div class="menu-section equipment-sell">
-            <h2>装備の売却</h2>
-            <ul id="sell-list">
-                <!-- 装備一覧 -->
-                <li onclick="sellEquipment('古い剣', 20)">古い剣 - 20ゴールド</li>
-                <li onclick="sellEquipment('傷ついた盾', 10)">傷ついた盾 - 10ゴールド</li>
-                <!-- 他のアイテムも追加 -->
-            </ul>
-            <div id="selected-sell-status">
-                <!-- 売却した装備のステータス表示 -->
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="menu-section rest">
-            <h2>休む</h2>
-            <button onclick="rest()">休む</button>
-            <div id="rest-status">
-                <!-- 休んだ結果の表示 -->
-            </div>
-        </div>
+    <!-- 装備一覧表示 -->
+    <div class="list-container">
+        <h3>装備一覧</h3>
+        <ul id="equipmentList" class="equipment-list">
+            <!-- 装備名をクリックすると詳細を表示 -->
+            <li th:each="equipment : ${equipmentList}" th:text="${equipment}" onclick="showEquipmentDetails(this.innerText)"></li>
+        </ul>
     </div>
 
-    <!-- フィールド画面に戻るボタン -->
-    <button onclick="returnToField()">フィールドに戻る</button>
 </div>
 
-<script src="js/mura.js"></script>
+<!-- アイテム詳細と装備詳細のコンテナ -->
+<div class="details-container">
 
-<script>
-    // フィールド画面に戻る処理
-    function returnToField() {
-        // フィールド画面のURLにリダイレクト
-        window.location.href = "/field";
-    }
-</script>
+    <!-- アイテム詳細表示 -->
+    <div id="itemDetailsContainer">
+        <h2 id="itemName"></h2>
+        <p id="itemEffect"></p>
+        <p id="purchasePrice"></p>
+        <label for="purchaseQuantity">数量:</label>
+        <select id="purchaseQuantity" name="quantity" required>
+            <!-- You may dynamically populate this dropdown in JavaScript based on the available quantity -->
+            <!-- For simplicity, let's assume a maximum quantity of 10 -->
+            <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+        </select>
+        <button type="button" onclick="purchaseItem()">アイテム購入</button>
+    </div>
+
+    <!-- 装備詳細表示 -->
+    <div id="equipmentDetailsContainer">
+        <h2 id="equipmentName"></h2>
+        <p id="equipmentEffect"></p>
+        <p id="purchasePriceEquipment"></p>
+        <label for="purchaseQuantityEquipment">数量:</label>
+        <select id="purchaseQuantityEquipment" name="quantity" required>
+            <!-- You may dynamically populate this dropdown in JavaScript based on the available quantity -->
+            <!-- For simplicity, let's assume a maximum quantity of 10 -->
+            <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+        </select>
+        <button type="button" onclick="purchaseEquipment()">装備購入</button>
+    </div>
+</div>
+
+<!-- 所持アイテム一覧表示 -->
+<div class="item-equipment-container">
+    <div class="list-container">
+        <h3>所持アイテム一覧</h3>
+        <ul id="playerItemList" class="item-list">
+            <!-- 所持アイテム名をクリックすると詳細を表示 -->
+            <li th:each="playerItem : ${playerItemList}" th:text="${playerItem}" onclick="showPlayerItemDetails(this.innerText)"></li>
+        </ul>
+    </div>
+ 
+    <!-- 所持装備一覧表示 -->
+    <div class="list-container">
+        <h3>所持装備一覧</h3>
+        <ul id="playerEquipmentList" class="equipment-list">
+            <!-- 所持装備名をクリックすると詳細を表示 -->
+            <li th:each="playerEquipment : ${playerEquipmentList}" th:text="${playerEquipment}" onclick="showPlayerEquipmentDetails(this.innerText)"></li>
+        </ul>
+    </div>
+</div>
+<div>
+<!-- 所持アイテム詳細表示 -->
+<div id="playeritemDetailsContainer">
+     <p id="playeritemName"></p>
+    <p id="playeritemQuantity"></p>
+    <p id="sellPrice"></p>
+    <label>数量:</label>
+    <select id="playerItemQuantity" name="quantity">
+        <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+    </select>
+    <button type="button" onclick="sellItem()">アイテム売却</button>
+</div>
+
+
+<!-- 所持装備詳細表示 -->
+<div id="playerequipmentDetailsContainer">
+	<p id="playerequipmentName"></p>
+	<p id="playerequipmentQuantity"></p>
+	<p id="sellPriceEquipment"></p>
+	<label>数量:</label>
+	<select id="playerEquipmentQuantity" name="quantity">
+		<option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+	</select>
+	<button type="button" onclick="sellEquipment()">装備売却</button>
+	</div>
+</div>	
+	<!-- フィールドに戻るボタン -->
+<button type="button" onclick="goBack()">フィールドに戻る</button>
 
 </body>
 </html>

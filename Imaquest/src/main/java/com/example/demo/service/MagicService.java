@@ -18,7 +18,6 @@ public class MagicService {
 
     private static final String SELECT_PLAYER_INFO_QUERY = "SELECT * FROM player_characters WHERE player_id = ?";
     private static final String SELECT_ENEMIES_QUERY = "SELECT * FROM enemy_info";
-    private static final String SELECT_SPELL_DETAILS_QUERY = "SELECT * FROM magic_skills WHERE magic_skill_name = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final BattleSQLController battleSQLController;
@@ -29,54 +28,73 @@ public class MagicService {
         this.battleSQLController = battleSQLController;
     }
 
-    public String performMagic(int playerId, String spellName, Model model, HttpSession session) {
+    // 魔法処理
+    //プレイヤーIDと、選択された魔法名、モデル、セッションを引数に取る
+    //魔法ボタンが押されたら、Controllerでは、このメソッドを呼び出す
+    public String performMagic(int playerId, String selectedSpellName, Model model, HttpSession session) {
+        // プレイヤーの情報を取得
         Map<String, Object> playerInfo = getPlayerInfo(playerId);
+
+        // 敵の情報を取得
         List<Map<String, Object>> enemies = getEnemies();
-        Map<String, Object> enemy = enemies.get(0);
+        // セッションから敵の情報を取得
+        Map<String, Object> currentEnemy = (Map<String, Object>) session.getAttribute("currentEnemy");
+        // プレイヤーの魔法攻撃力と敵の魔法防御力を取得
+        int playerMagicAttack = (int) playerInfo.get("character_MagicAttack");
+        int enemyMagicDefense = (int) enemies.get(0).get("enemy_magic_defense");
+        // ダメージを計算
+        int playerMagicDamage = calculateMagicDamage(playerMagicAttack, enemyMagicDefense);
+        // バトル結果メッセージ
+        String battleResultMessage = null;
 
-        Map<String, Object> spellDetails = getSpellDetails(spellName);
-        int magicAttackPower = (int) spellDetails.get("magic_attack_power");
-        int enemyHP = (int) enemy.get("enemy_hp");
-
-        int playerDamage = calculateMagicDamage(magicAttackPower);
-        enemyHP -= playerDamage;
-
-        // セッションに敵のHP変化を保存
-        session.setAttribute("enemyHPChange", playerDamage);
-
-        if (enemyHP <= 0) {
-            battleSQLController.processEnemyDefeat(playerId, enemy);
-            String battleResultMessage = "プレイヤーが" + spellName + "を使用し、敵に" + playerDamage + "ダメージを与えて倒しました！";
-            model.addAttribute("battleResultMessage", battleResultMessage);
-            return getMagicServiceModel(playerId, spellName, playerDamage, session);
-        } else {
-            String battleResultMessage = "プレイヤーが" + spellName + "を使用し、敵に" + playerDamage + "ダメージを与えました！";
-            model.addAttribute("battleResultMessage", battleResultMessage);
-            return getMagicServiceModel(playerId, spellName, playerDamage, session);
+        // セッションからプレイヤーおよびモンスターのHPを取得
+        Integer playerHP = (Integer) session.getAttribute("character_HP");
+        if (playerHP == null) {
+            // "playerHP"がnullの場合の処理
+            model.addAttribute("errorMessage", "プレイヤーのHP情報が取得できませんでした。");
+            return "error";
         }
-    }
 
-    private String getMagicServiceModel(int playerId, String spellName, int damageDealt, HttpSession session) {
-        // ここで魔法サービスのモデルを生成するロジックを実装
-        // 例: "プレイヤーID: " + playerId + ", 魔法: " + spellName + ", ダメージ: " + damageDealt
-        return "プレイヤーID: " + playerId + ", 魔法: " + spellName + ", ダメージ: " + damageDealt;
-    }
+        // 新しい変数にモンスターのHPを格納
+        int monsterHP = (int) currentEnemy.get("enemy_hp");
 
+        // モンスターのHPを減算
+        monsterHP -= playerMagicDamage;
+
+        if (monsterHP <= 0) {
+            // モンスターのHPが0以下の場合の処理
+            String monsterName = (String) currentEnemy.get("enemy_name");
+            battleResultMessage = "プレイヤーが" + monsterName + "に" + playerMagicDamage + "ダメージを与えました！";
+            model.addAttribute("battleResultMessage", battleResultMessage);
+            System.out.println("monsterHP: " + monsterHP);
+        } else {
+            // モンスターのHPが0以下でない場合の処理
+            String monsterName = (String) currentEnemy.get("enemy_name");
+            battleResultMessage = "プレイヤーが" + monsterName + "に" + playerMagicDamage + "ダメージを与えました！";
+            model.addAttribute("battleResultMessage", battleResultMessage);
+            System.out.println("monsterHP: " + monsterHP);
+
+            // 新しい変数にモンスターのHPを格納
+            currentEnemy.put("enemy_hp", monsterHP);
+
+            // バトルメッセージをモデルに追加
+            model.addAttribute("battleResultMessage", battleResultMessage);
+        }
+
+        return "battle";
+    }
+//プレイヤーの情報を取得
     private Map<String, Object> getPlayerInfo(int playerId) {
         return jdbcTemplate.queryForMap(SELECT_PLAYER_INFO_QUERY, playerId);
     }
-
+//敵の情報を取得
     private List<Map<String, Object>> getEnemies() {
         return jdbcTemplate.queryForList(SELECT_ENEMIES_QUERY);
     }
-
-    private Map<String, Object> getSpellDetails(String spellName) {
-        return jdbcTemplate.queryForMap(SELECT_SPELL_DETAILS_QUERY, spellName);
-    }
-
-    private int calculateMagicDamage(int magicAttackPower) {
+//魔法ダメージの計算
+    private int calculateMagicDamage(int playerMagicAttack, int enemyMagicDefense) {
         Random random = new Random();
-        int baseDamage = magicAttackPower + random.nextInt(5);
-        return Math.max(baseDamage, 1);
+        int baseMagicDamage = playerMagicAttack - enemyMagicDefense + random.nextInt(5);
+        return Math.max(baseMagicDamage, 1);
     }
 }

@@ -19,8 +19,6 @@
     <p>HP: <span th:text="${playerHP}"></span></p>
     <p>MP: <span th:text="${playerMP}"></span></p>
 </div>
-
-
     <!-- 敵情報の表示 -->
    <div>
     <h2>敵情報</h2>
@@ -33,20 +31,21 @@
         <h2>バトルメッセージ</h2>
         <p><span th:text="${battleResultMessage}"></span></p>
     </div>
-
     <!-- バトルアクションの選択 -->
     <div>
         <h2>バトルアクション</h2>
         <form action="/battle" method="get">
 			<!-- Attackボタン -->
 <!-- ボタンごとにフォームを利用せず、直接GETリクエスト -->
+
 <button type="submit" name="playerAction" value="attack" formaction="/battle">Attack</button>
 <button type="submit" name="playerAction" value="magic" formaction="/battle">Magic</button>
 <button type="submit" name="playerAction" value="item" formaction="/battle">Item</button>
+<button type="submit" name="playerAction" value="escape" formaction="/battle">逃げる</button>
 <!-- 他のボタンも同様に追加 -->
 
             <button type="submit" name="playerAction" value="fight">戦う</button>
-            <button type="submit" name="playerAction" value="escape">逃げる</button>
+            
            
             
             <button type="submit" name="playerAction" value="defend">防御</button>

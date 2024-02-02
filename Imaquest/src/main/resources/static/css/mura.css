@@ -1,40 +1,73 @@
-/* mura.css */
+/* static/css/mura.css */
 
-/* 他のスタイル */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+}
 
-.menu-content {
+/* アイテム一覧と所持アイテム一覧のコンテナ */
+.item-equipment-container {
     display: flex;
-    position: relative;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.menu-section {
-    width: 30%;
-    border: 1px solid #ddd;
+/* アイテム一覧と所持アイテム一覧のリストスタイルを調整 */
+.list-container {
+    flex: 1;
+    border: 1px solid #ccc;
     padding: 10px;
-    margin: 0 10px;
-    display: flex;
-    flex-direction: column;
 }
 
-#selected-purchase-status,
-#selected-sell-status,
-#rest-status {
-    margin-top: 10px;
-    flex-grow: 1;
+.item-list, .equipment-list, #playerItemList, #playerEquipmentList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* フィールドへ戻るボタンのスタイル */
-.return-to-field-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    padding: 10px;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
+.item-list li, .equipment-list li, #playerItemList li, #playerEquipmentList li {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
     cursor: pointer;
+    flex-basis: 48%;
 }
 
-.return-to-field-button:hover {
-    background-color: #2980b9;
+/* 所持アイテム一覧と所持装備一覧のリストスタイルを調整 */
+.player-list-container {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px; /* 新しく追加したスタイル */
 }
+
+#playerItemList, #playerEquipmentList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#playerItemList li, #playerEquipmentList li {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    flex-basis: 48%;
+}
+
+/* アイテムおよび装備の詳細表示用のコンテナ */
+.details-container {
+    margin-top: 20px;
+    display: flex; /* 新しく追加したスタイル */
+    justify-content: space-between;
+}
+div {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+/* ... 他のスタイルがあれば追加 ... */

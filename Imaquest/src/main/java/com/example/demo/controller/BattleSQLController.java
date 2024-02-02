@@ -168,7 +168,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class BattleSQLController {
@@ -197,65 +196,68 @@ public class BattleSQLController {
 		return jdbcTemplate.queryForList(selectSql);
 	}
    
-    @Transactional
-    public void processBattleRewards(int enemyId, int itemId, int magicSkillId, HttpSession session) {
-        // セッションからプレイヤーIDを取得
-        Integer playerId = (Integer) session.getAttribute("player_id");
+    
+//ゴールドのドロップ処理
+	//セッション内のモンスターの情報はMap<String, Integer>型で保存されている
+	public void dropGold(int playerId, Map<String, Integer> currentEnemy) {
+		int enemyGoldReward = currentEnemy.get("enemy_gold_reward");
 
-        if (playerId == null) {
-            // プレイヤーIDがnullの場合、エラー処理を行うか適切な対応を行う
-            // 例えば、ログを出力してエラーを通知する、もしくはデフォルトのプレイヤーIDなどを使用するなど
-            // ここでは簡単にログを出力する例を示します
-            System.err.println("プレイヤーIDがセッションから取得できませんでした。");
-            return;
-        }
+		// プレイヤーの現在のゴールドを取得
+		String selectPlayerGoldSql = "SELECT character_gold FROM player_characters WHERE player_id = ?";
+		int currentGold = jdbcTemplate.queryForObject(selectPlayerGoldSql, Integer.class, playerId);
 
-        dropGold(playerId, enemyId);
-        dropItem(playerId, enemyId);
-        gainExperience(playerId, enemyId);
-        useItem(playerId, itemId);
-        learnMagicSkill(playerId, magicSkillId);
-    }
-//ゴールドのドロップ
-    private void dropGold(int playerId, int enemyId) {
-        String selectPlayerGoldSql = "SELECT character_gold FROM player_characters WHERE player_id = ?";
-        int currentGold = jdbcTemplate.queryForObject(selectPlayerGoldSql, Integer.class, playerId);
+		// 敵とプレイヤーのゴールドを合算してDBを更新
+		String updatePlayerGoldSql = "UPDATE player_characters SET character_gold = ? WHERE player_id = ?";
+		jdbcTemplate.update(updatePlayerGoldSql, currentGold + enemyGoldReward, playerId);
+	}
+	
+	
+	// ドロップ率を取得
+	//セッション内のモンスターの情報はMap<String, Integer>型で保存されている
+	public void dropItem(int playerId, Map<String, Integer> currentEnemy) {
+		int enemyId = currentEnemy.get("enemy_id");
+		String selectDropRateSql = "SELECT drop_rate FROM enemy_info WHERE enemy_id = ?";
+		int dropRate = jdbcTemplate.queryForObject(selectDropRateSql, Integer.class, enemyId);
 
-        String selectEnemyGoldSql = "SELECT enemy_gold_reward FROM enemy_info WHERE enemy_id = ?";
-        int enemyGoldReward = jdbcTemplate.queryForObject(selectEnemyGoldSql, Integer.class, enemyId);
+		// ドロップ率に基づいてアイテムがドロップするか判定
+		if (dropRate >= new Random().nextInt(100)) {
+			// アイテムIDを取得
+			String selectItemRewardIdSql = "SELECT enemy_item_reward_id FROM enemy_info WHERE enemy_id = ?";
+			int itemRewardId = jdbcTemplate.queryForObject(selectItemRewardIdSql, Integer.class, enemyId);
 
-        String updateGoldSql = "UPDATE player_characters SET character_gold = ? WHERE player_id = ?";
-        jdbcTemplate.update(updateGoldSql, currentGold + enemyGoldReward, playerId);
-    }
+			
+			//アイテムがドロップする、場合、プレイヤーアイテムテーブルにアイテムを追加
+			addItemToPlayerInventory(playerId, itemRewardId);
+			
+		}
+		//アイテムがドロップしない場合
+		
+		
+	}
+	
+	
+   
 
-    //アイテムのドロップ
-    private void dropItem(int playerId, int enemyId) {
-        String insertSql = "INSERT INTO player_items (player_id, item_id, item_quantity) " +
-                "SELECT ?, enemy_info.enemy_item_reward_id, 1 " +
-                "FROM enemy_info " +
-                "WHERE enemy_id = ? AND RAND() <= enemy_info.drop_rate";
+	//プレイヤーアイテムテーブルにアイテムが存在するか確認
+private void addItemToPlayerInventory(int playerId, int itemRewardId) {
+		// TODO 自動生成されたメソッド・スタブ
+	
+	
+	//存在しない場合、アイテムを追加
+	    String checkItemExistenceSql = "SELECT COUNT(*) FROM player_items WHERE player_id = ? AND item_id = ?";
+		if (jdbcTemplate.queryForObject(checkItemExistenceSql, Integer.class, playerId, itemRewardId) == 0) {
+			String insertSql = "INSERT INTO player_items (player_id, item_id, item_quantity) VALUES (?, ?, 1)";
+			jdbcTemplate.update(insertSql, playerId, itemRewardId);
+			//存在する場合、アイテムの数量を増やす
+		} else {
+			String updateSql = "UPDATE player_items SET item_quantity = item_quantity + 1 WHERE player_id = ? AND item_id = ?";
+			jdbcTemplate.update(updateSql, playerId, itemRewardId);
+		}
+		
+	}
 
-        String checkExistingSql = "SELECT COUNT(*) FROM player_items " +
-                "WHERE player_id = ? AND item_id = (SELECT enemy_item_reward_id FROM enemy_info WHERE enemy_id = ?)";
-
-        if (jdbcTemplate.queryForObject(checkExistingSql, Integer.class, playerId, enemyId) > 0) {
-            String updateQuantitySql = "UPDATE player_items " +
-                    "SET item_quantity = item_quantity + 1 " +
-                    "WHERE player_id = ? AND item_id = (SELECT enemy_item_reward_id FROM enemy_info WHERE enemy_id = ?)";
-            jdbcTemplate.update(updateQuantitySql, playerId, enemyId);
-        } else {
-            jdbcTemplate.update(insertSql, playerId, enemyId);
-        }
-    }
 //アイテムの使用
-    private void useItem(int playerId, int itemId) {
-        String checkItemExistenceSql = "SELECT COUNT(*) FROM player_items WHERE player_id = ? AND item_id = ?";
-        if (jdbcTemplate.queryForObject(checkItemExistenceSql, Integer.class, playerId, itemId) > 0) {
-            String updateQuantitySql = "UPDATE player_items SET item_quantity = item_quantity - 1 " +
-                    "WHERE player_id = ? AND item_id = ?";
-            jdbcTemplate.update(updateQuantitySql, playerId, itemId);
-        }
-    }
+    
 //	魔法スキルの習得
     
     private void learnMagicSkill(int playerId, int magicSkillId) {
@@ -267,34 +269,18 @@ public class BattleSQLController {
     }
 //    経験値の獲得
     private void gainExperience(int playerId, int enemyId) {
+    	//敵の経験値報酬を取得
         String selectEnemyExpSql = "SELECT enemy_exp_reward FROM enemy_info WHERE enemy_id = ?";
         int enemyExpReward = jdbcTemplate.queryForObject(selectEnemyExpSql, Integer.class, enemyId);
-
+//プレイヤーの現在の経験値を取得
         String selectPlayerExpSql = "SELECT character_Experience FROM player_characters WHERE player_id = ?";
         int currentExp = jdbcTemplate.queryForObject(selectPlayerExpSql, Integer.class, playerId);
-
+//敵とプレイヤーの経験値を合算してdbを更新
         String updateExpSql = "UPDATE player_characters SET character_Experience = ? WHERE player_id = ?";
         jdbcTemplate.update(updateExpSql, currentExp + enemyExpReward, playerId);
     }
-//    敵の撃破
-    public void processEnemyDefeat(int playerId, Map<String, Object> enemy) {
-        int enemyExpReward = (int) enemy.get("enemy_exp_reward");
-        int enemyGoldReward = (int) enemy.get("enemy_gold_reward");
-
-        // プレイヤーの経験値と所持金を取得
-        String selectPlayerInfoSql = "SELECT character_Experience, character_gold FROM player_characters WHERE player_id = ?";
-        Map<String, Object> playerInfo = jdbcTemplate.queryForMap(selectPlayerInfoSql, playerId);
-        int currentExp = (int) playerInfo.get("character_Experience");
-        int currentGold = (int) playerInfo.get("character_gold");
-
-        // プレイヤーの経験値と所持金を更新
-        String updatePlayerInfoSql = "UPDATE player_characters SET character_Experience = ?, character_gold = ? WHERE player_id = ?";
-        jdbcTemplate.update(updatePlayerInfoSql, currentExp + enemyExpReward, currentGold + enemyGoldReward, playerId);
-
-        // 以下、アイテムのドロップなどの処理も含めて実装
-        // ...
-    }
-
+    
+    
  // レベルアップ処理
     public void levelUp(int playerId) {
         // プレイヤーの現在の経験値とレベルを取得
@@ -311,6 +297,21 @@ public class BattleSQLController {
         if (currentExp >= requiredExpForNextLevel) {
             // レベルアップ処理
             int newLevel = currentLevel + 1;
+            
+            //レベルアップしたとき能力値を上昇させる
+            //元々の能力値をすべて取得し、元々の能力値を+10して更新
+            
+            String selectPlayerStatusSql = "SELECT character_HP, character_MP, character_Attack, character_Defense FROM player_characters WHERE player_id = ?";
+            Map<String, Object> playerStatus = jdbcTemplate.queryForMap(selectPlayerStatusSql, playerId);
+            	int currentHP = (int) playerStatus.get("character_HP");
+            	int currentMP = (int) playerStatus.get("character_MP");
+            	int currentAttack = (int) playerStatus.get("character_Attack");
+            	int currentDefense = (int) playerStatus.get("character_Defense");
+            	String updatePlayerStatusSql = "UPDATE player_characters SET character_HP = ?, character_MP = ?, character_Attack = ?, character_Defense = ? WHERE player_id = ?";
+            	jdbcTemplate.update(updatePlayerStatusSql, currentHP + 10, currentMP + 10, currentAttack + 10, currentDefense + 10, playerId);
+            	
+            
+            
 
             // プレイヤーのレベルを更新
             String updatePlayerLevelSql = "UPDATE player_characters SET character_Level = ? WHERE player_id = ?";
@@ -319,5 +320,80 @@ public class BattleSQLController {
             // レベルアップメッセージなど、必要な処理を追加
             System.out.println("プレイヤーがレベルアップしました！ 新しいレベル: " + newLevel);
         	}
+        //レベルアップしないとき
+        System.out.println("currentExp: " + currentExp+"レベルアップはしません");
     	}
+//////////////////////////////敵の撃破時の処理をまとめたもの
+    //これを戦闘終了時に読み込めばすべての処理が行われる
+    public void processEnemyDefeat(int playerId, Map<String, Integer> currentEnemy,HttpSession session) {
+        // モンスターの撃破処理
+    	int enemyExpReward = (int) currentEnemy.get("enemy_exp_reward");
+        int enemyGoldReward = (int) currentEnemy.get("enemy_gold_reward");
+
+        // プレイヤーの経験値と所持金を取得
+        String selectPlayerInfoSql = "SELECT character_Experience, character_gold FROM player_characters WHERE player_id = ?";
+        Map<String, Object> playerInfo = jdbcTemplate.queryForMap(selectPlayerInfoSql, playerId);
+        int currentExp = (int) playerInfo.get("character_Experience");
+        int currentGold = (int) playerInfo.get("character_gold");
+        //コンソールに表示
+        System.out.println("currentExp: " + currentExp);
+        System.out.println("currentGold: " + currentGold);
+        
+        // プレイヤーの経験値と所持金を更新
+        String updatePlayerInfoSql = "UPDATE player_characters SET character_Experience = ?, character_gold = ? WHERE player_id = ?";
+        jdbcTemplate.update(updatePlayerInfoSql, currentExp + enemyExpReward, currentGold + enemyGoldReward, playerId);
+
+        
+        
+        // アイテムのドロップを呼び出す
+        int enemyItemRewardId = (int) currentEnemy.get("enemy_item_reward_id");
+        addItemToPlayerInventory(playerId, enemyItemRewardId);
+
+        // レベルアップ処理を行う
+        levelUp(playerId);
+        
+     
+
+        
+     // バトルメッセージの生成
+        String battleMessage = generateBattleMessage(playerId, currentEnemy, session);
+
+        // バトルメッセージをセッションに格納
+        session.setAttribute("battleMessage", battleMessage);
+
+        
     }
+
+    // バトルメッセージ生成メソッド
+    //項目ごとに違う箱を用意
+    //BattleControllerでの戦闘終了時に呼び出され、バトルメッセージを生成する。その後コントローラーでの処理になる	
+    public String generateBattleMessage(Integer playerId, Map<String, Integer> currentEnemy, HttpSession session) {
+        // バトルメッセージの生成ロジックを実装
+        StringBuilder message = new StringBuilder();
+        message.append(session.getAttribute("character_Name")).append("は").append(currentEnemy.get("enemy_name")).append("を倒しました！");
+
+        // 経験値の取得
+        Integer experiencePoints = (Integer) currentEnemy.get("enemy_exp_reward");
+        message.append(" 経験値").append(experiencePoints).append("を手に入れました！");
+
+        // ゴールドの取得
+        Integer gold = (Integer) currentEnemy.get("enemy_gold_reward");
+        message.append(" ゴールド").append(gold).append("を手に入れました！");
+
+        // レベルアップメッセージの取得
+        String levelUpMessage = (String) session.getAttribute("levelUpMessage");
+        if (levelUpMessage != null) {
+            message.append(" ").append(levelUpMessage);
+        }
+        //flagの値をfieldに変更
+        session.setAttribute("flag", "field");
+
+        return message.toString();
+    }
+    
+        
+
+       
+    }
+
+    
