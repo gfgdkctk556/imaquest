@@ -231,13 +231,9 @@ public class BattleSQLController {
 			
 		}
 		//アイテムがドロップしない場合
-		
-		
+
 	}
 	
-	
-   
-
 	//プレイヤーアイテムテーブルにアイテムが存在するか確認
 private void addItemToPlayerInventory(int playerId, int itemRewardId) {
 		// TODO 自動生成されたメソッド・スタブ
@@ -258,15 +254,40 @@ private void addItemToPlayerInventory(int playerId, int itemRewardId) {
 
 //アイテムの使用
     
-//	魔法スキルの習得
-    
-    private void learnMagicSkill(int playerId, int magicSkillId) {
-        String checkMagicSkillExistenceSql = "SELECT COUNT(*) FROM player_skill WHERE player_id = ? AND magic_skill_id = ?";
-        if (jdbcTemplate.queryForObject(checkMagicSkillExistenceSql, Integer.class, playerId, magicSkillId) == 0) {
-            String insertSql = "INSERT INTO player_skill (player_id, magic_skill_id) VALUES (?, ?)";
-            jdbcTemplate.update(insertSql, playerId, magicSkillId);
-        }
+    public void useItem(int playerId, int itemId) {
     }
+        
+        //プレイヤーの覚えている魔法を取得する
+        //まずセッションに入っているプレイヤーidを取得
+        //その後、そのプレイヤーidを使って、プレイヤースキルテーブルから魔法スキルを取得
+        //プレイヤースキルテーブルから魔法スキルidを取得するためのSQL文を用意
+       //魔法スキルidを使って、魔法スキルテーブルから魔法スキルを取得するためのSQL文を用意
+        //SQL文を使って、魔法スキルを取得
+        //取得した魔法スキルをリストに追加
+        //リストを返す
+    //これをコントローラーで呼び出し、htmlへ表示をする
+    
+		public List<Map<String, Object>> getMagicSkills(int playerId) {
+			String selectPlayerSkillsSql = "SELECT magic_skill_id FROM player_skill WHERE player_id = ?";
+			List<Integer> magicSkillIds = jdbcTemplate.queryForList(selectPlayerSkillsSql, Integer.class, playerId);
+			return jdbcTemplate.queryForList("SELECT * FROM magic_skills WHERE skill_id IN (?)", magicSkillIds);
+		}
+		
+		
+    
+       
+        private void learnMagicSkill(int playerId, int magicSkillId) {
+            String checkMagicSkillExistenceSql = "SELECT COUNT(*) FROM player_skill WHERE player_id = ? AND magic_skill_id = ?";
+            if (jdbcTemplate.queryForObject(checkMagicSkillExistenceSql, Integer.class, playerId, magicSkillId) == 0) {
+                String insertSql = "INSERT INTO player_skill (player_id, magic_skill_id) VALUES (?, ?)";
+                jdbcTemplate.update(insertSql, playerId, magicSkillId);
+            }
+        }
+        
+        
+        
+        
+    
 //    経験値の獲得
     private void gainExperience(int playerId, int enemyId) {
     	//敵の経験値報酬を取得
@@ -335,14 +356,15 @@ private void addItemToPlayerInventory(int playerId, int itemRewardId) {
         Map<String, Object> playerInfo = jdbcTemplate.queryForMap(selectPlayerInfoSql, playerId);
         int currentExp = (int) playerInfo.get("character_Experience");
         int currentGold = (int) playerInfo.get("character_gold");
-        //コンソールに表示
-        System.out.println("currentExp: " + currentExp);
-        System.out.println("currentGold: " + currentGold);
+       
         
         // プレイヤーの経験値と所持金を更新
         String updatePlayerInfoSql = "UPDATE player_characters SET character_Experience = ?, character_gold = ? WHERE player_id = ?";
         jdbcTemplate.update(updatePlayerInfoSql, currentExp + enemyExpReward, currentGold + enemyGoldReward, playerId);
-
+//コンソールに表示
+        System.out.println("プレイヤーが" + currentEnemy.get("enemy_name") + "を倒しました！ 経験値: " + enemyExpReward + " 所持金: " + enemyGoldReward);
+        //所持金が〇〇になりました
+        System.out.println("所持金が" + currentGold + "になりました");
         
         
         // アイテムのドロップを呼び出す
@@ -351,9 +373,6 @@ private void addItemToPlayerInventory(int playerId, int itemRewardId) {
 
         // レベルアップ処理を行う
         levelUp(playerId);
-        
-     
-
         
      // バトルメッセージの生成
         String battleMessage = generateBattleMessage(playerId, currentEnemy, session);
@@ -387,7 +406,6 @@ private void addItemToPlayerInventory(int playerId, int itemRewardId) {
         }
         //flagの値をfieldに変更
         session.setAttribute("flag", "field");
-
         return message.toString();
     }
     

@@ -19,18 +19,44 @@ public class BattleController {
     private final AttackService attackService;
     private final MagicService magicService;
 
+    
+    
     @Autowired
     public BattleController(BattleSQLController battleSQLController, AttackService attackService, MagicService magicService) {
         this.battleSQLController = battleSQLController;
         this.attackService = attackService;
         this.magicService = magicService;
     }
+   
+
+        // フィールド画面に戻る処理
+        @GetMapping("/returnToField")
+        public String returnToField(HttpSession session) {
+            // プレイヤーの現在位置情報をセッションに保存
+            Integer playerRow = (Integer) session.getAttribute("playerRow");
+            Integer playerCol = (Integer) session.getAttribute("playerCol");
+
+            // セッションに位置情報を保存
+            session.setAttribute("playerRow", playerRow);
+            session.setAttribute("playerCol", playerCol);
+
+            // バトル中のセッション情報をクリア（任意の情報があれば）
+            session.removeAttribute("currentEnemy");
+
+            // バトル終了フラグを終了に変更
+            session.setAttribute("flag", "終了");
+
+            return "redirect:/api/field"; // フィールド画面にリダイレクト
+        }
+    
+
+    
+    
 
     // 戦闘開始準備
     @GetMapping("/battleStart")
     public String battleStart(HttpSession session) {
         session.setAttribute("flag", "開始");
-        System.out.println("通ったよ～ん");
         return "redirect:/battle";
     
 
@@ -51,22 +77,16 @@ public class BattleController {
         if (playerId == null) {
             return "redirect:/login";
         }
-        //もしflagの値がfieldの時、フィールド画面に遷移する
-        if
-        (session.getAttribute("flag").equals("field")) {
-        	// セッションから敵の情報を削除
-            session.removeAttribute("currentEnemy");
-        	return "redirect:/field";
-        	
-        }
+        
         //もししflagの値が終了の場合、バトル終了処理を行う
         if (session.getAttribute("flag").equals("終了")) {
         	Map<String, Integer> currentEnemy =  (Map<String, Integer>) session.getAttribute("currentEnemy");
         	//processEnemyDefeatメソッドを呼び出す引数はちゃんと合わせる
          battleSQLController.processEnemyDefeat(playerId,currentEnemy, session);
-       
-        	
-            session.setAttribute("flag", "field");
+         //敵のsessionを削除
+         session.removeAttribute("currentEnemy");
+             	System.out.println("敵のセッションを削除お！");
+         return "redirect:/field";
          
         }
 
@@ -97,6 +117,10 @@ public class BattleController {
                 case "attack":
                     String attackServiceModel = attackService.performAttack(playerId, model, session);
                     model.addAttribute("attackServiceModel", attackServiceModel);
+                    
+                 // 敵の攻撃処理を呼び出す
+                    String enemyAttackServiceModel = attackService.performEnemyAttack(playerId, model, session);
+                    model.addAttribute("enemyAttackServiceModel", enemyAttackServiceModel);
                     break;
                 case "magic":
                 	//魔法処理を呼び出す
@@ -111,7 +135,8 @@ public class BattleController {
                 // 他のアクションに対する処理も追加
                     //逃げる処理；フィールド画面に遷移
                     case "escape":
-                    	session.setAttribute("flag", "field");
+                    	session.removeAttribute("currentEnemy");
+                    	return "redirect:/field";
                     	
                 default:
                     break;
@@ -130,10 +155,14 @@ public class BattleController {
         // バトルメッセージを取得
         String battleResultMessage = (String) model.getAttribute("battleResultMessage");
         model.addAttribute("battleResultMessage", battleResultMessage);
+        //modelの中身を確認
+        System.out.println("modelの中身" + battleResultMessage);
+        // バト
         if (!(session.getAttribute("flag").equals("終了"))) {
             session.setAttribute("flag", "バトル中");
         }
         return "battle";
     
     }
+    
 }

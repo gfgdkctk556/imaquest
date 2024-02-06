@@ -42,6 +42,7 @@ public class LoginController {
             if (playerId != null) {
                 // プレイヤーの全情報を取得
             	Map<String, Object> playerInfo = getPlayerInfo(playerId);
+            	
                 session.setAttribute("playerId", playerId);
                 session.setAttribute("character_Name", playerInfo.get("character_Name"));
                 session.setAttribute("character_Level", playerInfo.get("character_Level"));
@@ -55,6 +56,14 @@ public class LoginController {
                 session.setAttribute("character_gold", playerInfo.get("character_gold"));
                 session.setAttribute("char_type", playerInfo.get("char_type"));
                 // 他のプレイヤー情報も必要に応じてセッションに追加
+                
+                
+              //マックスmpのセッション
+                session.setAttribute("maxMP", playerInfo.get("character_MP"));
+              
+                
+                
+                
                 System.out.println(playerInfo.get("character_HP"));
             } else {
                 // エラーハンドリング: プレイヤーIDが取得できない場合の処理

@@ -31,6 +31,8 @@ public class MagicService {
     // 魔法処理
     //プレイヤーIDと、選択された魔法名、モデル、セッションを引数に取る
     //魔法ボタンが押されたら、Controllerでは、このメソッドを呼び出す
+    //プレイヤーが敵に魔法攻撃する処理
+    //選択された魔法を
     public String performMagic(int playerId, String selectedSpellName, Model model, HttpSession session) {
         // プレイヤーの情報を取得
         Map<String, Object> playerInfo = getPlayerInfo(playerId);

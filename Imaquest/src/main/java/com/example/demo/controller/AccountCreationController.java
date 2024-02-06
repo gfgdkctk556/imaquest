@@ -50,6 +50,7 @@ public class AccountCreationController {
                 "character_HP = 100, " +
                 "character_MP = 50, " +
                 "character_Attack = 10, " +
+                "character_MagicAttack = 1, " +
                 "character_Defense = 10, " +
                 "character_Image = 'player_image.png', " +
                 "character_Experience = 0 " +

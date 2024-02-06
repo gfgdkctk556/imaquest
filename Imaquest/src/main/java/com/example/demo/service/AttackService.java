@@ -63,11 +63,17 @@ public class AttackService {
         // モンスターのHPを減算
         monsterHP -= playerDamage;
 //モンスターのHPが0以下の場合の処理
-        
+
         if (monsterHP <= 0) {
         	            // モンスターのHPが0以下の場合の処理
         	
+        	// 新しい変数にモンスターのHPを格納
+            currentEnemy.put("enemy_hp", 0);
         	
+        	//敵が倒れたことを表示する
+        	battleResultMessage = "プレイヤーが"+playerDamage+"を与えて倒しました！";
+        	//バトルリザルトメッセージをBattleControllerに送る
+        	model.addAttribute("battleResultMessage", battleResultMessage);
         	//バトル終了処理を行い、フラグをfieldに変更する
         	session.setAttribute("flag","終了");
         return "battle";
@@ -77,8 +83,10 @@ public class AttackService {
         	            
         		String monsterName = (String) currentEnemy.get("enemy_name");
         		
-        		battleResultMessage = "プレイヤーが" + monsterName + "に" + playerDamage + "ダメージを与えました！";
+        		battleResultMessage = "プレイヤーのターン：プレイヤーが" + monsterName + "に" + playerDamage + "ダメージを与えました！";
+        		//BattleControllerに送るバトルリザルトメッセージ
         		
+        		// バトル結果メッセージをモデルに追加
         		model.addAttribute("battleResultMessage", battleResultMessage);
         		
         		System.out.println("monsterHP: " + monsterHP);
@@ -87,13 +95,63 @@ public class AttackService {
         		
         // 新しい変数にモンスターのHPを格納
         currentEnemy.put("enemy_hp", monsterHP);
-
-        // バトルメッセージをモデルに追加
-        model.addAttribute("battleResultMessage", battleResultMessage);
+    
+        
+        
+        
         	}
         return "battle";
     }
 
+    // 敵の攻撃処理
+    public String performEnemyAttack(int playerId, Model model, HttpSession session) {
+        // プレイヤーの情報を取得
+        Map<String, Object> playerInfo = getPlayerInfo(playerId);
+
+        // 敵の情報を取得
+        List<Map<String, Object>> enemies = getEnemies();
+        // セッションから敵の情報を取得
+        Map<String, Object> currentEnemy = (Map<String, Object>) session.getAttribute("currentEnemy");
+
+        // プレイヤーの防御力と敵の攻撃力を取得
+        int playerDefense = (int) playerInfo.get("character_Defense");
+        int enemyAttack = (int) enemies.get(0).get("enemy_attack");
+
+        // ダメージを計算
+        int enemyDamage = calculateDamage(enemyAttack, playerDefense);
+
+        // セッションからプレイヤーのHPを取得
+        Integer playerHP = (Integer) session.getAttribute("character_HP");
+        if (playerHP == null) {
+            // エラーメッセージを設定したり、デフォルトの値を使ったりする
+            model.addAttribute("errorMessage", "プレイヤーのHP情報が取得できませんでした。");
+            return "error"; // エラーページにリダイレクトなど
+        }
+
+        // プレイヤーのHPを減算
+        playerHP -= enemyDamage;
+
+        // プレイヤーのHPが0以下になった場合の処理
+        if (playerHP <= 0) {
+            // プレイヤーが倒れたことを表示する
+            String battleResultMessage = "プレイヤーは倒れました。";
+            model.addAttribute("battleResultMessage", battleResultMessage);
+            session.setAttribute("flag", "終了"); // バトル終了フラグを終了に変更
+            return "battle";
+        }
+
+        // プレイヤーのHPが0以下でない場合の処理
+        String playerName = (String) playerInfo.get("character_Name");
+        String enemyAttackMessage = "敵のターン：敵が" + playerName + "に" + enemyDamage + "ダメージを与えました！";
+        //敵の攻撃メッセージをBattleControllerに送る、変数名はenemyAttackMessage
+        model.addAttribute("enemyAttackMessage", enemyAttackMessage);
+       
+
+        // プレイヤーのHPをセッションに保存
+        session.setAttribute("character_HP", playerHP);
+
+        return "battle";
+    }
     private Map<String, Object> getPlayerInfo(int playerId) {
         return jdbcTemplate.queryForMap(SELECT_PLAYER_INFO_QUERY, playerId);
     }

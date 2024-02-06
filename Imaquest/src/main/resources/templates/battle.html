@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battle</title>
+    <title>戦闘画面</title>
     <!-- 他の必要なCSSやリンクがあれば追加 -->
 </head>
 
@@ -27,10 +27,14 @@
     <p>HP: <span th:text="${enemy.enemy_hp}"></span></p>
 </div>
     <!-- バトルメッセージの表示 -->
-    <div>
-        <h2>バトルメッセージ</h2>
-        <p><span th:text="${battleResultMessage}"></span></p>
-    </div>
+    
+<div id="battleMessageContainer">
+    <h2>バトルメッセージ</h2>
+    <p><span th:text="${battleResultMessage}"></span></p>
+    <p><span th:text="${enemyAttackMessage}"></span></p>
+    
+</div>
+
     <!-- バトルアクションの選択 -->
     <div>
         <h2>バトルアクション</h2>
@@ -41,7 +45,9 @@
 <button type="submit" name="playerAction" value="attack" formaction="/battle">Attack</button>
 <button type="submit" name="playerAction" value="magic" formaction="/battle">Magic</button>
 <button type="submit" name="playerAction" value="item" formaction="/battle">Item</button>
-<button type="submit" name="playerAction" value="escape" formaction="/battle">逃げる</button>
+<button type="submit" name="playerAction" value="escape" formaction="/battle">escape</button>
+
+
 <!-- 他のボタンも同様に追加 -->
 
             <button type="submit" name="playerAction" value="fight">戦う</button>
@@ -65,5 +71,7 @@
     <!-- 他のバトル画面の要素を追加 -->
 
 </body>
+
+
 
 </html>
