@@ -257,7 +257,7 @@ public class MenuController {
 		 System.out.println("ダメージ");
 		 	    }
 	            
-	            // 成功メッセージをHTMLに渡す
+	            // 成功メッセージをHTMLに渡す.
 	          
 	            return "menu";
 	        } catch (Exception e) {

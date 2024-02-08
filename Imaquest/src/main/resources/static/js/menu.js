@@ -35,8 +35,7 @@ function useItem(itemName, itemType, itemEffect, itemQuantity) {
             itemName: itemName,
             itemType: itemType,
             itemEffect: itemEffect,
-            itemQuantity: itemQuantity,
-           	itemType: itemType,
+            itemQuantity: itemQuantity
            	
         },
 success: function(response) {

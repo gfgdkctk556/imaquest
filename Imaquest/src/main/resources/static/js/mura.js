@@ -32,7 +32,7 @@ function showItemDetails(itemName) {
     // 装備詳細を非表示にする
     hideEquipmentDetails();
 
-    // Ajaxリクエストを使用してアイテム詳細を取得
+    // Ajaxリクエストを使用してアイテム詳細を取得.
     fetch("/itemDetails?itemName=" + itemName)
         .then(response => response.json())
         .then(data => {
