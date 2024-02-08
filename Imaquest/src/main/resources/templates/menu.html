@@ -1,89 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <script src="/js/menu.js"defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>RPG メニュー画面</title>
 </head>
+
 <body>
 
-<div class="menu-container">
-    <div class="menu-header">メニュー画面</div>
-    
-    <div class="menu-content">
-        <!-- Left Column -->
-        <div class="menu-section character-selection">
-            <h2>キャラ選択</h2>
-            <ul id="character-list">
-                <!-- キャラクター一覧 -->
-                <li onclick="selectCharacter('勇者')">勇者</li>
-                <li onclick="selectCharacter('魔法使い')">魔法使い</li>
-                <li onclick="selectCharacter('回復士')">回復士</li>
-                <li onclick="selectCharacter('タンク')">タンク</li>
-            </ul>
-            <div id="selected-character-status">
-                <!-- 選択したキャラクターのステータス表示 -->
-            </div>
+    <div class="menu-container">
+        <div class="menu-header">
+            <h1>メニュー画面</h1>
         </div>
 
-        <!-- Center Column -->
-        <div class="menu-section equipment-status">
-            <h2>装備とステータス</h2>
-            <div id="equipment-list">
-                <!-- 装備一覧 -->
-                <h3>所持武具一覧</h3>
-                <ul>
-                    <li onclick="selectEquipment('剣')">剣 <button onclick="equip('剣')">装備</button> <button onclick="unequip('剣')">外す</button></li>
-                    <li onclick="selectEquipment('盾')">盾 <button onclick="equip('盾')">装備</button> <button onclick="unequip('盾')">外す</button></li>
-                    <li onclick="selectEquipment('杖')">杖 <button onclick="equip('杖')">装備</button> <button onclick="unequip('杖')">外す</button></li>
-                    <li onclick="selectEquipment('鎧')">鎧 <button onclick="equip('鎧')">装備</button> <button onclick="unequip('鎧')">外す</button></li>
-                    <li onclick="selectEquipment('帽子')">帽子 <button onclick="equip('帽子')">装備</button> <button onclick="unequip('帽子')">外す</button></li>
-                </ul>
-                <div id="selected-equipment-status">
-                    <!-- 選択した武具のステータス表示 -->
+        <div class="menu-content">
+            <!-- Left Column -->
+            <h2>キャラクター情報</h2>
+            <div class="menu-section character-selection">
+                <h3>ステータス表示</h3>
+
+                <p>プレイヤー名: <span th:text="${characterName}"></span></p>
+                <p>レベル: <span th:text="${characterLevel}"></span></p>
+                <p>所持金: <span th:text="${characterGold}"></span></p>
+                <p>HP: <span th:text="${characterHP}"></span>/<span th:text="${maxHP}"></span></p>
+                <p>MP: <span th:text="${characterMP}"></span>/<span th:text="${maxMP}"></span></p>
+                <p>攻撃力: <span th:text="${characterAttack}"></span></p>
+                <P>魔法攻撃力: <span th:text="${characterMagicAttack}"></span></P>
+                <p>防御力: <span th:text="${characterDefense}"></span></p>
+                
+                
+            </div>
+    	<!-- 装備を外すボタン -->
+            <div class="menu-section">
+                <button id="removeEquipmentButton" class="button">装備を外す</button>
+            </div>
+            
+        <div>
+            <h2>所持アイテムと装備</h2>
+            <div>
+                <!-- アイテムセクション -->
+                <h3>アイテム</h3>
+                <table>
+                    <!-- テーブルヘッダー -->
+                    <tr>
+                        <th>アイテム名</th>
+                        <th>｜</th>
+                        <th>所持数</th>
+                        <th>｜</th>
+                        <th>効果</th>
+                        
+                    </tr>
+                    <!-- テーブル行 -->
+                    <tr th:each="item : ${playerItemMap}" onclick="showItemDetails(this)" th:data-type="${item.value.itemType}">
+                        <td th:text="${item.key}"></td>
+                        <th>｜</th>
+                        <td th:text="${item.value.itemQuantity}"></td>
+                        <th>｜</th>
+                        <td th:text="${item.value.itemEffect}"></td>
+                        
+                    </tr>
+                </table>
+                <div id="itemDetails">
+                    <!-- アイテムの詳細はここに表示されます -->
                 </div>
             </div>
+            <h3>装備</h3>
+            <table>
+                    <!-- テーブルヘッダー -->
+                    <tr>
+                        <th>装備名</th>
+                        <th>｜</th>
+                        <th>所持数</th>
+                        <th>｜</th>
+                        <th>効果</th>
+                       
+                    </tr>
+                    <!-- テーブル行 -->
+				<tr th:each="equipment : ${playerEquipmentMap}" onclick="showEquipmentDetails(this)"th:data-type="${equipment.value.equipmentType}">
+					<td th:text="${equipment.key}"></td>
+				<th>｜</th>
+				<td th:text="${equipment.value.equipmentQuantity}"></td>
+				<th>｜</th>
+				<td th:text="${equipment.value.equipmentEffect}"></td>
+				</tr>
+				</table>
+				 <div id="equipmentDetails">
+                    <!-- 装備の詳細はここに表示されます -->
+                </div>
         </div>
 
-        <!-- Right Column -->
-        <div class="menu-section item-list">
-            <h2>アイテム</h2>
-            <ul id="item-list">
-                <!-- アイテム一覧 -->
-                <li onclick="selectItem('回復薬')">回復薬</li>
-                <li onclick="selectItem('毒消し')">毒消し</li>
-                <li onclick="selectItem('魔法の羽')">魔法の羽</li>
-                <li onclick="selectItem('力の秘薬')">力の秘薬</li>
-                <li onclick="selectItem('魔法の結晶')">魔法の結晶</li>
-            </ul>
-            <div id="selected-item-description">
-                <!-- 選択したアイテムの説明表示 -->
-            </div>
-        </div>
+       
     </div>
 
-    <!-- フィールド画面に戻るボタン -->
-    <button onclick="returnToField()">フィールドに戻る</button>
-</div>
+ 
+ <button id="returnToLoginButton" class="button" onclick="returnToLogin()">フィールドに戻る</button>
+   
 
-<script src="js/menu.js"></script>
-
-<script>
-    function equip(item) {
-        alert(`${item}を装備しました！`);
-    }
-
-    function unequip(item) {
-        alert(`${item}を外しました！`);
-    }
-
-    // フィールド画面に戻る処理
-    function returnToField() {
-        // フィールド画面のURLにリダイレクト
-        window.location.href = "/field";
-    }
-</script>
-
+ 
 </body>
+
 </html>

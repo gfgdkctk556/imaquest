@@ -49,12 +49,18 @@ public class LoginController {
                 session.setAttribute("character_HP", playerInfo.get("character_HP"));
                 session.setAttribute("character_MP", playerInfo.get("character_MP"));
                 session.setAttribute("character_Attack", playerInfo.get("character_Attack"));
+                session.setAttribute("character_MagicAttack", playerInfo.get("character_MagicAttack"));
                 session.setAttribute("character_Defense", playerInfo.get("character_Defense"));
                 session.setAttribute("character_Image", playerInfo.get("character_Image"));
                 session.setAttribute("first_login", playerInfo.get("first_login"));
                 session.setAttribute("character_gold", playerInfo.get("character_gold"));
                 session.setAttribute("char_type", playerInfo.get("char_type"));
+                
                 // 他のプレイヤー情報も必要に応じてセッションに追加
+                
+                //マックスmpのセッション
+                session.setAttribute("maxMP", playerInfo.get("character_MP"));
+                
                 System.out.println(playerInfo.get("character_HP"));
             } else {
                 // エラーハンドリング: プレイヤーIDが取得できない場合の処理

@@ -1,46 +1,172 @@
-// 選択したアイテムのステータスを保持する変数
-let selectedEquipment = "";
+function showItemDetails(clickedRow) {
+    var itemName = clickedRow.cells[0].innerText;
+    var itemQuantity = clickedRow.cells[2].innerText;
+    var itemEffect = clickedRow.cells[4].innerText;
+    var itemType = clickedRow.getAttribute("data-type");
 
-function selectCharacter(character) {
-    // 選択したキャラクターのステータス表示（デモなので直書き）
-    document.getElementById('selected-character-status').innerHTML = `<h3>${character}のステータス</h3><p>HP: 100</p><p>MP: 50</p>`;
+    var itemDetailsContainer = document.getElementById("itemDetails");
+
+    // アイテムの詳細情報を作成
+    var itemDetailsHTML = "<h4>アイテム詳細</h4>";
+    itemDetailsHTML += "<p>アイテム名: " + itemName + "</p>";
+    itemDetailsHTML += "<p>所持数: " + itemQuantity + "</p>";
+    itemDetailsHTML += "<p>効果: " + itemEffect + "</p>";
+
+   
+
+    itemDetailsHTML += "<button onclick=\"useItem('" + itemName + "',' " + itemType + "')\">アイテムを使用する</button>";
+
+    // 詳細情報を表示
+    itemDetailsContainer.innerHTML = itemDetailsHTML;
 }
 
-function selectEquipment(equipment) {
-    // 選択した武具のステータス表示（デモなので直書き）
-    document.getElementById('selected-equipment-status').innerHTML = `<h3>${equipment}のステータス</h3><p>攻撃力: +10</p><p>防御力: +5</p>`;
-    
-    // 選択したアイテムを変数に保存
-    selectedEquipment = equipment;
+
+// アイテム使用関数
+function useItem(itemName, itemType, itemEffect, itemQuantity) {
+    // itemTypeに基づいてアイテムの効果を実行
+   
+
+    // Ajax通信
+    $.ajax({
+        type: "POST",
+        url: "/useItem",
+        data: {
+			
+            itemName: itemName,
+            itemType: itemType,
+            itemEffect: itemEffect,
+            itemQuantity: itemQuantity,
+           	itemType: itemType,
+           	
+        },
+success: function(response) {
+    // 成功時の処理 タイプのを判定
+	if (itemType == 1 ) {
+		
+		alert("HPを回復したぞ！");
+		// /menuを再読み込みする
+		location.reload();
+		
+	} else if (itemType == 2 ) {
+		
+		alert("MPを回復したぞ！");
+		// /menuを再読み込みする
+		location.reload();
+		if(a==1){
+			alert("過剰だぞ！");
+			location.reload();
+		}
+	}else if (itemType == 3 ) {
+		alert("これは使いどきがあるぞ！");
+		location.reload();
+		
+    }else if (itemType == 99) {
+
+		 alert("ゆうたのなみだを使ったぞ");
+		   // /menuを再読み込みする
+		   location.reload();
+	} 
+	   
+},
+        error: function(error) {
+                
+
+            alert("満タンだぞ");
+        }
+    });
 }
 
-function selectItem(item) {
-    // 選択したアイテムの説明表示（デモなので直書き）
-    document.getElementById('selected-item-description').innerHTML = `<h3>${item}</h3><p>回復アイテムです。</p>`;
-    
-    // 選択したアイテムを変数に保存
-    selectedEquipment = item;
+function showEquipmentDetails(clickedRow) {
+    var equipmentName = clickedRow.cells[0].innerText;
+    var equipmentQuantity = clickedRow.cells[2].innerText;
+    var equipmentEffect = clickedRow.cells[4].innerText;
+    var equipmentType = clickedRow.getAttribute("data-type");
+
+
+// 装備の詳細情報を作成
+   var equipmentDetailsHTML = "<h4>装備詳細</h4>";
+    equipmentDetailsHTML += "<p>装備名: " + equipmentName + "</p>";
+    equipmentDetailsHTML += "<p>所持数: " + equipmentQuantity + "</p>";
+    equipmentDetailsHTML += "<p>効果: " + equipmentEffect + "</p>";
+   
+   
+	equipmentDetailsHTML += "<button onclick=\"useEquipment('" + equipmentName + "',' " + equipmentType + "')\">装備する</button>";
+
+	// 詳細情報を表示
+	var equipmentDetailsContainer = document.getElementById("equipmentDetails");
+	equipmentDetailsContainer.innerHTML = equipmentDetailsHTML;
+       
+}
+// 装備使用関数
+
+// 装備使用関数
+function useEquipment(equipmentName, equipmentType, equipmentEffect, equipmentQuantity) {
+    // Ajax通信
+    $.ajax({
+        type: "POST",
+        url: "/equipItem",
+        data: {
+            equipmentName: equipmentName,
+            equipmentType: equipmentType,
+            equipmentEffect: equipmentEffect,
+            equipmentQuantity: equipmentQuantity
+            
+        },
+		success: function(response) {
+			// 成功時の処理
+			alert("装備しました。");
+			// /menuを再読み込みする
+			location.reload();
+		},
+		error: function(error) {
+			// エラー時の処理
+			console.error(error);
+			alert("エラーが発生しました。");
+			}
+    });
 }
 
-// 装備および外すボタンのクリックイベント処理
-function equipItem() {
-    if (selectedEquipment) {
-        showMessage(`装備しました: ${selectedEquipment}`);
-    } else {
-        showMessage("アイテムが選択されていません");
-    }
+
+// 装備を外すボタンの要素を取得
+const removeEquipmentButton = document.getElementById('removeEquipmentButton');
+
+// 装備を外すボタンにクリックイベントを追加
+removeEquipmentButton.addEventListener('click', function() {
+    // 装備を外す処理を実行
+    removeEquipment();
+});
+
+// 装備を外す関数
+function removeEquipment() {
+    // 装備名を取得
+    var equipmentName = "装備名"; // ここに装備名を取得するコードを追加
+
+    // Ajaxリクエストを送信
+    $.ajax({
+        type: "POST",
+        url: "/removeEquipmentBtn", // Spring Bootコントローラーのエンドポイント
+        data: {
+            equipmentName: equipmentName // 装備名を送信
+        },
+        success: function(response) {
+            // 成功時の処理
+            alert("装備を外しました");
+            // menu画面を再読み込みするなどの処理を追加
+            location.reload(); // 例: ページを再読み込み
+        },
+        error: function(error) {
+            // エラー時の処理
+            console.error(error);
+            alert("エラーが発生しました。");
+        }
+    });
 }
 
-function unequipItem() {
-    if (selectedEquipment) {
-        showMessage(`外しました: ${selectedEquipment}`);
-    } else {
-        showMessage("アイテムが選択されていません");
-    }
-}
+	
 
-// メッセージ表示関数
-function showMessage(message) {
-    const messageArea = document.getElementById('message-area');
-    messageArea.innerText = message;
+
+//フィールドに戻る処理
+ function returnToLogin() {
+				// フィールド画面に遷移する処理を追加
+				window.location.href = "/field";
 }

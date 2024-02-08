@@ -8,30 +8,42 @@
     <script src="/js/mura.js"></script>
 </head>
 <body>
-<div id="itemDetails"></div>
+
+<div id="itemDetails"><h2>村へようこそ</h2></div>
 
 
-    <h2>村へようこそ</h2>
-
-
-<!-- アイテム一覧表示 -->
-<h3>アイテム一覧</h3>
-<div class="item-list-container">
-    <ul id="itemList" class="item-list">
-        <!-- アイテム名をクリックすると詳細を表示 -->
-        <li th:each="item : ${itemList}" th:text="${item}" onclick="showItemDetails(this.innerText)"></li>
-    </ul>
+<div>
+<!-- 所持ゴールド -->
+<p>所持ゴールド：<span id="playerGold" th:text="${playerGold}+G"></span></p>
 </div>
-<hr>
-<!-- 装備一覧表示 -->
-<h3>装備一覧</h3>
-<div class="equipment-list-container">
-    <ul id="equipmentList" class="equipment-list">
-        <!-- 装備名をクリックすると詳細を表示 -->
-        <li th:each="equipment : ${equipmentList}" th:text="${equipment}" onclick="showEquipmentDetails(this.innerText)"></li>
-    </ul>
+<!-- アイテム一覧と装備一覧のコンテナ -->
+<div class="item-equipment-container">
+
+    <!-- アイテム一覧表示 -->
+    <div class="list-container">
+        <h3>アイテム一覧</h3>
+        <ul id="itemList" class="item-list">
+            <!-- アイテム名をクリックすると詳細を表示 -->
+            <li th:each="item : ${itemList}" th:text="${item}" onclick="showItemDetails(this.innerText)"></li>
+        </ul>
+    </div>
+
+    <!-- 装備一覧表示 -->
+    <div class="list-container">
+        <h3>装備一覧</h3>
+        <ul id="equipmentList" class="equipment-list">
+            <!-- 装備名をクリックすると詳細を表示 -->
+            <li th:each="equipment : ${equipmentList}" th:text="${equipment}" onclick="showEquipmentDetails(this.innerText)"></li>
+        </ul>
+    </div>
+
 </div>
-<div id="itemDetailsContainer" class="details-container">
+
+<!-- アイテム詳細と装備詳細のコンテナ -->
+<div class="details-container">
+
+    <!-- アイテム詳細表示 -->
+    <div id="itemDetailsContainer">
         <h2 id="itemName"></h2>
         <p id="itemEffect"></p>
         <p id="purchasePrice"></p>
@@ -44,7 +56,8 @@
         <button type="button" onclick="purchaseItem()">アイテム購入</button>
     </div>
 
-    <div id="equipmentDetailsContainer" class="details-container">
+    <!-- 装備詳細表示 -->
+    <div id="equipmentDetailsContainer">
         <h2 id="equipmentName"></h2>
         <p id="equipmentEffect"></p>
         <p id="purchasePriceEquipment"></p>
@@ -56,21 +69,55 @@
         </select>
         <button type="button" onclick="purchaseEquipment()">装備購入</button>
     </div>
-    
-    <h3>所持アイテム一覧</h3>
-<div class="player-items-container">
-    <ul id="playerItemList" class="player-item-list">
-        <li th:each="playerItem : ${playerItems}">
-            <span th:text="${playerItem.item_name}"></span>
-            <span th:text="'（所持数：' + ${playerItem.item_quantity} + '）'"></span>
-        </li>
-    </ul>
 </div>
 
-<div id="sellButton" style="display: none;">
-    <label for="sellQuantity">売却数量:</label>
-    <select id="sellQuantity" name="quantity" required></select>
+<!-- 所持アイテム一覧表示 -->
+<div class="item-equipment-container">
+    <div class="list-container">
+        <h3>所持アイテム一覧</h3>
+        <ul id="playerItemList" class="item-list">
+            <!-- 所持アイテム名をクリックすると詳細を表示 -->
+            <li th:each="playerItem : ${playerItemList}" th:text="${playerItem}" onclick="showPlayerItemDetails(this.innerText)"></li>
+        </ul>
+    </div>
+ 
+    <!-- 所持装備一覧表示 -->
+    <div class="list-container">
+        <h3>所持装備一覧</h3>
+        <ul id="playerEquipmentList" class="equipment-list">
+            <!-- 所持装備名をクリックすると詳細を表示 -->
+            <li th:each="playerEquipment : ${playerEquipmentList}" th:text="${playerEquipment}" onclick="showPlayerEquipmentDetails(this.innerText)"></li>
+        </ul>
+    </div>
+</div>
+<div>
+<!-- 所持アイテム詳細表示 -->
+<div id="playeritemDetailsContainer">
+     <p id="playeritemName"></p>
+    <p id="playeritemQuantity"></p>
+    <p id="sellPrice"></p>
+    <label>数量:</label>
+    <select id="playerItemQuantity" name="quantity">
+        <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+    </select>
     <button type="button" onclick="sellItem()">アイテム売却</button>
 </div>
+
+
+<!-- 所持装備詳細表示 -->
+<div id="playerequipmentDetailsContainer">
+	<p id="playerequipmentName"></p>
+	<p id="playerequipmentQuantity"></p>
+	<p id="sellPriceEquipment"></p>
+	<label>数量:</label>
+	<select id="playerEquipmentQuantity" name="quantity">
+		<option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+	</select>
+	<button type="button" onclick="sellEquipment()">装備売却</button>
+	</div>
+</div>	
+	<!-- フィールドに戻るボタン -->
+<button type="button" onclick="goBack()">フィールドに戻る</button>
+
 </body>
 </html>

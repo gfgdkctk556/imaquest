@@ -1,41 +1,73 @@
 /* static/css/mura.css */
 
-/* アイテム一覧と装備一覧のコンテナ */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+}
+
+/* アイテム一覧と所持アイテム一覧のコンテナ */
 .item-equipment-container {
     display: flex;
-    flex-wrap: wrap; /* 行がいっぱいになったら次の行に移動する */
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-/* アイテム一覧のコンテナ */
-.item-list-container {
+/* アイテム一覧と所持アイテム一覧のリストスタイルを調整 */
+.list-container {
     flex: 1;
-    margin-right: 20px; /* アイテム一覧と装備一覧の間に余白を設定 */
+    border: 1px solid #ccc;
+    padding: 10px;
 }
 
-/* 装備一覧のコンテナ */
-.equipment-list-container {
-    flex: 1;
-}
-
-/* アイテム一覧と装備一覧のリストスタイルを調整 */
-.item-list, .equipment-list {
+.item-list, .equipment-list, #playerItemList, #playerEquipmentList {
     list-style-type: none;
     padding: 0;
-    margin: 0; /* デフォルトのマージンを削除 */
+    margin: 0;
 }
 
-/* アイテム一覧と装備一覧の各リストアイテムの余白とホバーエフェクトを設定 */
-.item-list li, .equipment-list li {
+.item-list li, .equipment-list li, #playerItemList li, #playerEquipmentList li {
     margin-bottom: 10px;
     padding: 8px;
     border: 1px solid #ccc;
     cursor: pointer;
-    flex-basis: 48%; /* アイテム一覧と装備一覧の幅を均等に分配 */
+    flex-basis: 48%;
+}
+
+/* 所持アイテム一覧と所持装備一覧のリストスタイルを調整 */
+.player-list-container {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px; /* 新しく追加したスタイル */
+}
+
+#playerItemList, #playerEquipmentList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#playerItemList li, #playerEquipmentList li {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    flex-basis: 48%;
 }
 
 /* アイテムおよび装備の詳細表示用のコンテナ */
 .details-container {
     margin-top: 20px;
+    display: flex; /* 新しく追加したスタイル */
+    justify-content: space-between;
 }
-
+div {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
 /* ... 他のスタイルがあれば追加 ... */
