@@ -7,6 +7,21 @@ let villageCount = 0; // Counter for villages
 
 
 
+// フラグをチェックして位置をリセットする
+    const resetPositionFlag = sessionStorage.getItem("resetPositionFlag");
+    if (resetPositionFlag) {
+        // フラグを削除
+        sessionStorage.removeItem("resetPositionFlag");
+
+        // プレイヤーの位置を0,0にリセット
+        const player = document.querySelector(".player");
+        player.setAttribute("data-row", 0);
+        player.setAttribute("data-col", 0);
+        // 画面上の表示もリセットする場合は適切な処理を追加する
+        // 例： player.style.top = "0px"; player.style.left = "0px";
+    }
+
+
 // プレイヤーの初期位置
 const player = document.createElement("div");
 player.classList.add("square", "player");
@@ -148,4 +163,7 @@ function isValidMove(row, col) {
 
 // エンカウントの確率（仮に30%とします）
 const encounterProbability = 0.3;
+
+ 
+    
 });

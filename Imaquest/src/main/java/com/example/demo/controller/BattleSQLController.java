@@ -231,7 +231,6 @@ public class BattleSQLController {
 			
 		}
 		//アイテムがドロップしない場合
-
 	}
 	
 	//プレイヤーアイテムテーブルにアイテムが存在するか確認
@@ -257,15 +256,16 @@ private void addItemToPlayerInventory(int playerId, int itemRewardId) {
     public void useItem(int playerId, int itemId) {
     }
         
-        //プレイヤーの覚えている魔法を取得する
+       //プレイヤーの覚えている魔法を取得する
+    
         //まずセッションに入っているプレイヤーidを取得
         //その後、そのプレイヤーidを使って、プレイヤースキルテーブルから魔法スキルを取得
         //プレイヤースキルテーブルから魔法スキルidを取得するためのSQL文を用意
-       //魔法スキルidを使って、魔法スキルテーブルから魔法スキルを取得するためのSQL文を用意
+        //魔法スキルidを使って、魔法スキルテーブルから魔法スキルを取得するためのSQL文を用意
         //SQL文を使って、魔法スキルを取得
         //取得した魔法スキルをリストに追加
         //リストを返す
-    //これをコントローラーで呼び出し、htmlへ表示をする
+        //これをコントローラーで呼び出し、htmlへ表示をする
     
 		public List<Map<String, Object>> getMagicSkills(int playerId) {
 			String selectPlayerSkillsSql = "SELECT magic_skill_id FROM player_skill WHERE player_id = ?";

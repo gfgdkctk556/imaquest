@@ -29,73 +29,54 @@ public class BattleController {
     }
    
 
-        // フィールド画面に戻る処理
-        @GetMapping("/returnToField")
-        public String returnToField(HttpSession session) {
-            // プレイヤーの現在位置情報をセッションに保存
-            Integer playerRow = (Integer) session.getAttribute("playerRow");
-            Integer playerCol = (Integer) session.getAttribute("playerCol");
-
-            // セッションに位置情報を保存
-            session.setAttribute("playerRow", playerRow);
-            session.setAttribute("playerCol", playerCol);
-
-            // バトル中のセッション情報をクリア（任意の情報があれば）
-            session.removeAttribute("currentEnemy");
-
-            // バトル終了フラグを終了に変更
-            session.setAttribute("flag", "終了");
-
-            return "redirect:/api/field"; // フィールド画面にリダイレクト
-        }
-    
-
-    
-    
-
     // 戦闘開始準備
     @GetMapping("/battleStart")
     public String battleStart(HttpSession session) {
         session.setAttribute("flag", "開始");
         return "redirect:/battle";
-    
-
-    
+ 
     }
-    // バトル中処理
-    @GetMapping("/battle")
-    public <magicService> String startBattle(Model model, HttpSession session,
-                              @RequestParam(name = "playerAction", required = false) String playerAction,
-                              @RequestParam(name = "selectedSpellName", required = false) String selectedSpellName) {
+    
+    @GetMapping("/handleLoseFlag")
+    public String handleLoseFlag(HttpSession session) {
+        // flagに負けが入っている場合の処理
+        if ("負け".equals(session.getAttribute("flag"))) {
+            // フラグが負けの場合の処理を実行
+            // JavaScriptの関数を呼び出してプレイヤーの位置を初期化
+            return "<script>resetPlayerPosition();</script>";
+            
+        } else if ("勝ち".equals(session.getAttribute("flag"))) {
+            Integer playerId = (Integer) session.getAttribute("playerId");
+            Map<String, Integer> currentEnemy = (Map<String, Integer>) session.getAttribute("currentEnemy");
+            // バトル終了処理を行う
+            battleSQLController.processEnemyDefeat(playerId, currentEnemy, session);
+            // 敵のsessionを削除
+            session.removeAttribute("currentEnemy");
+            System.out.println("敵のセッションを削除しました！");
+            return "redirect:/field";
+        }
+        return "";
+    }
 
-        // flagの値が開始の場合、モンスターを取得してバトル開始して、flagの値をバトル中に変更する
-        // flagの値がバトル中の場合、バトル処理を行う。敵を倒した場合、flagの値を終了に変更する。
-        // flagの値が終了の場合、バトル終了処理（経験値やゴールドの取得、合算を行いdbを更新）を行う。その後flagの値をfieldに変更する
-        // flagの値がfieldの場合、フィールド画面に遷移する
+    @GetMapping("/battle")
+    public String startBattle(Model model, HttpSession session,
+       @RequestParam(name = "playerAction", required = false) String playerAction,
+       @RequestParam(name = "selectedSpellName", required = false) String selectedSpellName) {
+
         Integer playerId = (Integer) session.getAttribute("playerId");
-        System.out.println("flag内" + session.getAttribute("flag"));
         if (playerId == null) {
             return "redirect:/login";
-        }
-        
-        //もししflagの値が終了の場合、バトル終了処理を行う
-        if (session.getAttribute("flag").equals("終了")) {
-        	Map<String, Integer> currentEnemy =  (Map<String, Integer>) session.getAttribute("currentEnemy");
-        	//processEnemyDefeatメソッドを呼び出す引数はちゃんと合わせる
-         battleSQLController.processEnemyDefeat(playerId,currentEnemy, session);
-         //敵のsessionを削除
-         session.removeAttribute("currentEnemy");
-             	System.out.println("敵のセッションを削除お！");
-         return "redirect:/field";
-         
         }
 
         // もしモンスターがまだセッションにない場合、新しいモンスターを取得してセッションに格納
         if (session.getAttribute("flag").equals("開始")) {
             battleSQLController.setCurrentEnemy(session);
-
         }
         
+		if (session.getAttribute("flag").equals("勝ち")||session.getAttribute("flag").equals("負け")) {
+			return "redirect:/handleLoseFlag";
+		}
+
         Map<String, Integer> currentEnemy = (Map<String, Integer>) session.getAttribute("currentEnemy");
 
         // セッションからプレイヤー情報を取得
@@ -112,36 +93,32 @@ public class BattleController {
         model.addAttribute("enemies", session.getAttribute("monsterHP"));
         model.addAttribute("enemy", currentEnemy);
 
+        // もし敵がまだ生きている場合、バトル中フラグをセットしてバトルを続行
+        if (!currentEnemy.isEmpty() && currentEnemy.get("enemy_hp") > 0) {
+            session.setAttribute("flag", "バトル中");
+        }
+
+        // プレイヤーアクションがある場合、バトル処理を行う
         if (playerAction != null) {
             switch (playerAction) {
                 case "attack":
                     String attackServiceModel = attackService.performAttack(playerId, model, session);
                     model.addAttribute("attackServiceModel", attackServiceModel);
-                    
-                 // 敵の攻撃処理を呼び出す
-                    String enemyAttackServiceModel = attackService.performEnemyAttack(playerId, model, session);
-                    model.addAttribute("enemyAttackServiceModel", enemyAttackServiceModel);
+					if (!(attackServiceModel.equals("win"))) {
+	                    // 敵の攻撃処理を呼び出す
+	                    attackService.performEnemyAttack(playerId, model, session);
+					}
                     break;
                 case "magic":
-                	//魔法処理を呼び出す
-                	//
-                	magicService.performMagic(playerId, selectedSpellName, model, session);
-                	//
-               	    String magicServiceModel = magicService.performMagic(playerId, selectedSpellName, model, session);
-               	    // モデルに魔法処理の結果を追加
-               	    
+                    String magicServiceModel = magicService.performMagic(playerId, selectedSpellName, model, session);
                     model.addAttribute("magicServiceModel", magicServiceModel);
                     break;
-                // 他のアクションに対する処理も追加
-                    //逃げる処理；フィールド画面に遷移
-                    case "escape":
-                    	session.removeAttribute("currentEnemy");
-                    	return "redirect:/field";
-                    	
+                case "escape":
+                    session.removeAttribute("currentEnemy");
+                    return "redirect:/field";
                 default:
                     break;
             }
-
         }
 
         // プレイヤーと敵のHPの変化を取得
@@ -155,14 +132,8 @@ public class BattleController {
         // バトルメッセージを取得
         String battleResultMessage = (String) model.getAttribute("battleResultMessage");
         model.addAttribute("battleResultMessage", battleResultMessage);
-        //modelの中身を確認
-        System.out.println("modelの中身" + battleResultMessage);
-        // バト
-        if (!(session.getAttribute("flag").equals("終了"))) {
-            session.setAttribute("flag", "バトル中");
-        }
+
         return "battle";
-    
     }
-    
+
 }

@@ -60,6 +60,7 @@ public class LoginController {
                 
               //マックスmpのセッション
                 session.setAttribute("maxMP", playerInfo.get("character_MP"));
+                session.setAttribute("maxHP", playerInfo.get("character_HP"));
               
                 
                 

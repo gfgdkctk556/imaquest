@@ -40,7 +40,7 @@ public class AttackService {
         //プレイヤーの攻撃力と敵の防御力を取得
         int playerAttack = (int) playerInfo.get("character_Attack");
         int enemyDefense = (int) enemies.get(0).get("enemy_defense");
-        // ダメージを計算
+        // プレイヤーの攻撃を計算
         int playerDamage = calculateDamage(playerAttack, enemyDefense);
         // バトル結果メッセージ
         // バトル結果メッセージを格納する変数を宣言
@@ -74,9 +74,9 @@ public class AttackService {
         	battleResultMessage = "プレイヤーが"+playerDamage+"を与えて倒しました！";
         	//バトルリザルトメッセージをBattleControllerに送る
         	model.addAttribute("battleResultMessage", battleResultMessage);
-        	//バトル終了処理を行い、フラグをfieldに変更する
-        	session.setAttribute("flag","終了");
-        return "battle";
+        	//flagを勝ちに変更
+        	session.setAttribute("flag","勝ち");
+        return "win";
         	            
             // モンスターのHPが0以下でない場合の処理
         	} else {
@@ -95,16 +95,16 @@ public class AttackService {
         		
         // 新しい変数にモンスターのHPを格納
         currentEnemy.put("enemy_hp", monsterHP);
-    
         
-        
-        
+        //セッションにバトル中を入れる
+        session.setAttribute("flag", "バトル中");
+     
         	}
         return "battle";
     }
 
     // 敵の攻撃処理
-    public String performEnemyAttack(int playerId, Model model, HttpSession session) {
+    public void performEnemyAttack(int playerId, Model model, HttpSession session) {
         // プレイヤーの情報を取得
         Map<String, Object> playerInfo = getPlayerInfo(playerId);
 
@@ -125,19 +125,14 @@ public class AttackService {
         if (playerHP == null) {
             // エラーメッセージを設定したり、デフォルトの値を使ったりする
             model.addAttribute("errorMessage", "プレイヤーのHP情報が取得できませんでした。");
-            return "error"; // エラーページにリダイレクトなど
         }
 
         // プレイヤーのHPを減算
         playerHP -= enemyDamage;
 
-        // プレイヤーのHPが0以下になった場合の処理
         if (playerHP <= 0) {
-            // プレイヤーが倒れたことを表示する
-            String battleResultMessage = "プレイヤーは倒れました。";
-            model.addAttribute("battleResultMessage", battleResultMessage);
-            session.setAttribute("flag", "終了"); // バトル終了フラグを終了に変更
-            return "battle";
+            // プレイヤーが負けた場合の処理を実行
+            loseMethod(session);
         }
 
         // プレイヤーのHPが0以下でない場合の処理
@@ -149,8 +144,6 @@ public class AttackService {
 
         // プレイヤーのHPをセッションに保存
         session.setAttribute("character_HP", playerHP);
-
-        return "battle";
     }
     private Map<String, Object> getPlayerInfo(int playerId) {
         return jdbcTemplate.queryForMap(SELECT_PLAYER_INFO_QUERY, playerId);
@@ -165,5 +158,21 @@ public class AttackService {
         int baseDamage = playerAttack - enemyDefense + random.nextInt(5);
         return Math.max(baseDamage, 1);
     }
-   
+ // バトルコントローラー内に負けのメソッドを追加
+    public void loseMethod(HttpSession session) {
+    	
+    	//敵のセッションを削除
+    	session.removeAttribute("currentEnemy");
+        // プレイヤーの位置を初期位置にリセット（0, 0）
+        session.setAttribute("resetPositionFlag", true);
+
+        // プレイヤーのHPを全回復
+        Integer maxHP = (Integer) session.getAttribute("maxHP");
+        session.setAttribute("character_HP", maxHP);
+
+        // バトルフラグを終了に変更
+        session.setAttribute("flag", "負け");
+    }
+
+
 }

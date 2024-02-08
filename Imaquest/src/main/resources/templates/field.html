@@ -25,10 +25,6 @@
     プレイヤーID：<span th:text="${session.playerId != null ? session.playerId : '受け取れていません'}"></span>
 </div>
    <script>
-<!--    // セッション情報を表示-->
-<!--    var playerName = document.querySelector("#playerInfoDisplay span:nth-child(1)").innerText;-->
-<!--    var playerId = document.querySelector("#playerInfoDisplay span:nth-child(2)").innerText;-->
-
     
         // メニューボタンがクリックされたときの処理
         function openMenu() {
@@ -48,10 +44,7 @@
             window.location.href = "/battleStart";
         }
 
-        // JavaScriptでのセッション情報表示
-        console.log("セッションID: " + sessionId);
-        console.log("プレイヤー名: " + playerName);
-        console.log("プレイヤーID: " + playerId);
+       
   </script>
 </body>
 </html>
